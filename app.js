@@ -7,8 +7,6 @@ const countdown = document.getElementById("countdown");
 const nextPrayerDisplays = document.querySelectorAll(".next-prayer");
 const prayerTimeDisplay = document.getElementById("prayer-time");
 
-console.log(nextPrayerDisplays)
-
 async function getTimes() {
   if (!('fetch' in window)) {
     alert("Fetch API disabled or not found...unable to get time remaining.");
@@ -54,23 +52,18 @@ function getPrayerDate(time) {
   } else {
     string = string.substring(0, string.length-3);
   }
-  console.log(string);
   const hours = string.substr(0, (string.length == 5) ? 2 : 1);
   const minutes = string.substr(string.length-2, 2);
-  console.log(hours, minutes);
   let date = new Date(now.toDateString());
   date.setHours(hours, minutes, 0);
-  console.log(msToTime(date - now));
   if (date - now < 0) {
     date.setDate(now.getDate() + 1); 
   }
-  console.log(msToTime(date - now));
   console.log(date.toDateString() + " | " + date.getHours() + ":" + date.getMinutes());
   return date;
 }
 
 function msToTime(ms) {
-  console.log(ms);
   ms = Math.abs(ms);
   let seconds = ms/1000;
   let minutes = seconds/60;
@@ -92,7 +85,6 @@ function msToTime(ms) {
 function getNextPrayer() {
   let closest = prayerTimes[0] - now;
   let closestPrayer;
-  console.log(prayerTimes);
   prayerTimes.forEach((time, i) => {
     if (time - now < closest) {
       closest = time;
@@ -106,7 +98,6 @@ function getNextPrayer() {
     });
     prayerTimeDisplay.textContent = rawPrayerTimes[prayers.indexOf(closestPrayer)];
   }
-  console.log(closestPrayer);
   return prayers.indexOf(closestPrayer);
 }
 
