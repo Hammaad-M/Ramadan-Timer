@@ -17,7 +17,7 @@ async function getTimes() {
   let times = [];
   return new Promise(async (resolve) => {
     await jQuery(async ($) => {
-      $.getJSON('http://muslimsalat.com/seattle.json?jsoncallback=?', (response) => {
+      $.getJSON('https://muslimsalat.com/seattle.json?jsoncallback=?', (response) => {
         times.push(response.items[0].fajr, response.items[0].maghrib);
         resolve(times);
       });
