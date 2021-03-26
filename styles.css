@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap');
+
+
+body {
+    padding: 10px;
+    margin: 0;
+    background-color: rgba(40, 73, 10, 0.925);
+}
+.content {
+    font-family: 'Kanit',sans-serif;
+    width: 100%;
+    text-align: center;
+    color: white;
+}
+#countdown {
+    font-size: 100px;
+    letter-spacing: 10px;
+}
+
+@media only screen and (max-width: 500px) {
+    
+}
