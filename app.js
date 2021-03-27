@@ -89,9 +89,7 @@ function getNextPrayer() {
   let closestPrayer = prayers[0];
 
   prayerTimes.forEach((time, i) => {
-    console.log((time - now), closest);
     if (time - now < closest) {
-      console.log("changing");
       closest = time;
       closestPrayer = prayers[i];
     }
