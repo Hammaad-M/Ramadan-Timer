@@ -27,7 +27,7 @@ async function getTimes(location) {
 async function getLocation() {
   return new Promise(async (resolve) => {
     await jQuery(async ($) => {
-      $.getJSON('http://www.geoplugin.net/json.gp?jsoncallback=?', (data) => {
+      $.getJSON('/api/json.gp?jsoncallback=?', (data) => {
         resolve(data, null, 2);
       });
     })
