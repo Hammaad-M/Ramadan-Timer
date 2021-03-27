@@ -1,5 +1,0 @@
-[[redirects]]
-from = "/api/*"
-to = "http://www.geoplugin.net/json.gp?jsoncallback=?:splat"
-status = 200
-force = true

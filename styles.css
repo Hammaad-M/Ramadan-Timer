@@ -14,15 +14,24 @@ body {
 }
 .content button {
     padding: 7px;
+    margin-top: 10px;
+}
+.location-form input {
+    padding: 5px;
+    width: 30%;
+    max-width: 12em;
+}
+.user-input {
     border-radius: 5px;
     border: 2px solid black;
     font-family: 'Kanit', sans-serif;
-    margin-top: 10px;
 }
 #countdown {
     font-size: 100px;
     letter-spacing: 10px;
     text-shadow: 0 0 10px black;
+    padding: 0;
+    margin: 0.4em;
 }
 
 @media only screen and (max-width: 500px) {
@@ -31,7 +40,23 @@ body {
         text-shadow: 0 0 5px black;
     }
 }
-
+@media only screen and (max-width: 400px) {
+    #countdown {
+        font-size: 55px;
+        text-shadow: 0 0 5px black;
+    }
+}
+@media only screen and (max-width: 350px) {
+    #countdown {
+        font-size: 45px;
+    }
+    .user-input {
+        font-size: 10px;
+    }
+    .subtitles {
+        font-size: 12px;
+    }
+}
 @media only screen and (min-width: 1400px) {
     .subtitles {
         font-size: 24px;

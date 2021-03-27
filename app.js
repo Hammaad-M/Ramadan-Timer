@@ -2,11 +2,17 @@ let prayerTimes = [];
 let rawPrayerTimes = [];
 let now = new Date();
 let nextPrayer;
+let changingLocation = false;
+let locationChanged = false;
 const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
 const countdown = document.getElementById("countdown");
 const nextPrayerDisplays = document.querySelectorAll(".next-prayer");
 const prayerTimeDisplay = document.getElementById("prayer-time");
 const cityDisplay = document.getElementById("location");
+const locationForm = document.querySelector(".location-form");
+const changeLocationButton = document.getElementById("change-location");
+const locationInput = document.getElementById("city-input");
+const currentTime = document.getElementById("current-time");
 
 async function getTimes(city) {
   cityDisplay.textContent = city;
@@ -38,19 +44,41 @@ function update() {
   let now = new Date();
   remaining = msToTime(prayerTimes[getNextPrayer()] - now);
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
+  currentTime.textContent =  `${format(now.getHours())}:${format(now.getMinutes())}:${format(now.getSeconds())}`;
+  
 }
 
-async function init() {
-  const location = await getLocation();
-  const times = await getTimes(location.city);
+async function init(city) {
+  prayerTimes = [];
+  rawPrayerTimes = [];
+  nextPrayer = "";
+  let location;
+  if (city == null) {
+    location = await getLocation();
+    location = location.city;
+    locationForm.style.display = "none";
+  } else {
+    location = city;
+  }
+  const times = await getTimes(location);
   times.forEach((time) => {
     rawPrayerTimes.push(time);
     prayerTimes.push(getPrayerDate(time));
   });
   msToFajr = now - prayerTimes[0];
+  console.log(prayerTimes)
+  console.log(rawPrayerTimes)
   update();
-  setInterval(() => update(), 1000);
-};
+  let TID = setInterval(() => {
+    if (locationChanged) {
+      clearInterval( TID );
+      locationChanged = false;
+      init(locationInput.value);
+    } else {
+      update();
+    }
+  }, 1000);
+}
 
 
 
@@ -119,5 +147,17 @@ function format(string) {
     return "0" + string;
   } else {
     return string;
+  }
+}
+
+function changeLocation() {
+  changingLocation = !changingLocation;
+  if (changingLocation) {
+    locationForm.style.display = "block";
+    changeLocationButton.textContent = "apply";
+  } else {
+    locationForm.style.display = "none";
+    changeLocationButton.textContent = "Change Location";
+    locationChanged = true;
   }
 }
