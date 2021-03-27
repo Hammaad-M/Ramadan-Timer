@@ -15,10 +15,21 @@ body {
 #countdown {
     font-size: 100px;
     letter-spacing: 10px;
+    text-shadow: 0 0 10px black;
 }
 
 @media only screen and (max-width: 500px) {
     #countdown {
         font-size: 68px;
+        text-shadow: 0 0 5px black;
+    }
+}
+
+@media only screen and (min-width: 1400px) {
+    .subtitles {
+        font-size: 24px;
+    }
+    #countdown {
+        font-size: 130px;
     }
 }

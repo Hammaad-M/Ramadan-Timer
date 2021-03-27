@@ -25,7 +25,9 @@ async function getTimes() {
 
 function update() {
   let now = new Date();
+  console.log(getNextPrayer());
   remaining = msToTime(prayerTimes[getNextPrayer()] - now);
+  // console.log(remaining);
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
 }
 
@@ -84,9 +86,12 @@ function msToTime(ms) {
 
 function getNextPrayer() {
   let closest = prayerTimes[0] - now;
-  let closestPrayer;
+  let closestPrayer = prayers[0];
+
   prayerTimes.forEach((time, i) => {
+    console.log((time - now), closest);
     if (time - now < closest) {
+      console.log("changing");
       closest = time;
       closestPrayer = prayers[i];
     }
@@ -98,6 +103,7 @@ function getNextPrayer() {
     });
     prayerTimeDisplay.textContent = rawPrayerTimes[prayers.indexOf(closestPrayer)];
   }
+  console.log(closestPrayer);
   return prayers.indexOf(closestPrayer);
 }
 
