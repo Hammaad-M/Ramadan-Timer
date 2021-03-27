@@ -12,6 +12,13 @@ body {
     text-align: center;
     color: white;
 }
+.content button {
+    padding: 7px;
+    border-radius: 5px;
+    border: 2px solid black;
+    font-family: 'Kanit', sans-serif;
+    margin-top: 10px;
+}
 #countdown {
     font-size: 100px;
     letter-spacing: 10px;

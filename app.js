@@ -6,10 +6,10 @@ const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
 const countdown = document.getElementById("countdown");
 const nextPrayerDisplays = document.querySelectorAll(".next-prayer");
 const prayerTimeDisplay = document.getElementById("prayer-time");
+const cityDisplay = document.getElementById("location");
 
-async function getTimes(location) {
-  countdown.textContent = location;
-  countdown.style.fontSize = "50px";
+async function getTimes(city) {
+  cityDisplay.textContent = city;
   if (!('fetch' in window)) {
     alert("Fetch API disabled or not found...unable to get time remaining.");
     return;
@@ -17,7 +17,7 @@ async function getTimes(location) {
   let times = [];
   return new Promise(async (resolve) => {
     await jQuery(async ($) => {
-      $.getJSON('https://muslimsalat.com/' + location + '.json?jsoncallback=?', (response) => {
+      $.getJSON('https://muslimsalat.com/' + city + '.json?jsoncallback=?', (response) => {
         times.push(response.items[0].fajr, response.items[0].maghrib);
         resolve(times);
       });
@@ -27,22 +27,22 @@ async function getTimes(location) {
 async function getLocation() {
   return new Promise(async (resolve) => {
     await jQuery(async ($) => {
-      $.getJSON('/api/json.gp?jsoncallback=?', (data) => {
-        resolve(data, null, 2);
+      $.getJSON('https://ipapi.co/json/', (data) => {
+        resolve(data);
       });
     })
   })
 }
+
 function update() {
   let now = new Date();
   remaining = msToTime(prayerTimes[getNextPrayer()] - now);
-  // console.log(remaining);
-  // countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
+  countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
 }
 
 async function init() {
   const location = await getLocation();
-  const times = await getTimes(location.geoplugin_city);
+  const times = await getTimes(location.city);
   times.forEach((time) => {
     rawPrayerTimes.push(time);
     prayerTimes.push(getPrayerDate(time));
