@@ -25,7 +25,6 @@ async function getTimes() {
 
 function update() {
   let now = new Date();
-  console.log(getNextPrayer());
   remaining = msToTime(prayerTimes[getNextPrayer()] - now);
   // console.log(remaining);
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
@@ -101,7 +100,6 @@ function getNextPrayer() {
     });
     prayerTimeDisplay.textContent = rawPrayerTimes[prayers.indexOf(closestPrayer)];
   }
-  console.log(closestPrayer);
   return prayers.indexOf(closestPrayer);
 }
 
