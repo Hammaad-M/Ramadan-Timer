@@ -13,6 +13,7 @@ async function getLocalCityTime(zone) {
     return new Promise(async (resolve) => {
         let response = await fetch('http://api.timezonedb.com/v2.1/get-time-zone?key=IVNNFCYK4ANS&format=json&by=zone&zone=' + zone);
         response = await response.json();
+        console.log(response);
         resolve(response);
     });
 }   
