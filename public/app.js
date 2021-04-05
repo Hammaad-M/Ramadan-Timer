@@ -6,6 +6,7 @@ let nextPrayerIndex;
 let changingLocation = false;
 let locationChanged = false;
 let customCity = false;
+let customCountryCode;
 let citySupported;
 let unix;
 let first = 0;
@@ -57,14 +58,22 @@ async function getTimes(data, useIP) {
       })
     } else {
       await jQuery(async ($) => {
-        $.getJSON('https://muslimsalat.com/' + data + '.json?jsoncallback=?', (response) => {
-          if (!response.items) {
+        $.getJSON('http://api.aladhan.com/v1/timingsByCity?city=' + data + '&country=' + customCountryCode, (response) => {
+          if (response.status != "OK") {
             citySupported = false;
             alert("City not supported.")
             init(null);
           } else {
             citySupported = true;
-            times.push(response.items[0].fajr, response.items[0].dhuhr, response.items[0].asr, response.items[0].maghrib, response.items[0].isha);
+            const timings = response.data.timings;
+            times.push(
+              timings.Fajr, 
+              timings.Dhuhr,
+              timings.Asr, 
+              timings.Maghrib, 
+              timings.Isha
+            );
+            console.log(times);
             resolve(times);
           }
         });
@@ -97,14 +106,14 @@ function update() {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
-    /*
+    
     if (first == 5) {
       remaining.hours = 0;
       remaining.seconds = 0;
       remaining.minutes = 0;
     }
     first+=1;
-    */
+    
     if (remaining.seconds == 0 && remaining.minutes == 0 && remaining.hours == 0) {
       endCountdown();
     } else {
@@ -115,21 +124,22 @@ function update() {
   }
   adaptUI();
 }
-async function getCustomTimeStamp(city) {
-  const data = { city };
-  const response = await fetch('/localCityTime', {
+async function getCustomCityData(city) {
+  console.log("1");
+  const response = await fetch('/customCity', {
     method: 'POST',
     headers: {
       'Content-Type':'application/json'
     }, 
-    body: JSON.stringify(data)
+    body: JSON.stringify({ city })
   });
-  const localCityTime = await response.json();
-  if (localCityTime.status == 404) {
+  const res = await response.json();
+  if (res.status == 404) {
     alert("Unable to get current time for your city...try entering a local major city instead.");
     return null;
   } else {
-    return new Date(localCityTime.formatted).getTime() / 1000;
+    customCountryCode = res.countryCode;
+    return new Date(res.formattedTime).getTime() / 1000;
   }
   
 }
@@ -139,6 +149,7 @@ async function init(city) {
   nextPrayer = "";
   let times;
   let location;
+  console.log(city);
   if (city == null) {
     location = await getLocation();
     locationForm.style.display = "none";
@@ -148,15 +159,15 @@ async function init(city) {
     times = data.times;
   } else {
     location = city;
-    offset = await getLocation()
-    times = await getTimes(location);
-    unix = await getCustomTimeStamp(city);
+    console.log(location);
+    unix = await getCustomCityData(city);
+    times = await getTimes(location, false);
     if (unix != null) {
       now = new Date(unix*1000);
       customCity = true;
     }
   }
-  allPrayerTimes.textContent = `Fajr: ${times[0]}, Dhuhr: ${times[1]}, Asr: ${times[2]}, Maghrib: ${times[3]}, Isha: ${times[4]}`;
+  allPrayerTimes.textContent = `Fajr: ${times[0]} | Dhuhr: ${times[1]} | Asr: ${times[2]} | Maghrib: ${times[3]} | Isha: ${times[4]}`;
   times = [times[0], times[3]];
   location = location.substr(0, 1).toUpperCase() + location.substring(1);
   cityDisplay.textContent = location;
@@ -165,14 +176,16 @@ async function init(city) {
     prayerTimes.push(getPrayerDate(time));
   });
   msToFajr = now - prayerTimes[0];
-  fetch('/client', {
-    method: 'POST',
-    headers: {
-      'Content-Type':'application/json'
-    },
-    body: JSON.stringify({ location })
-  });
-  nextPrayerIndex = getNextPrayer();
+  if (!customCity) {
+    fetch('/client', {
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ location })
+    });
+  }
+  setNextPrayer(true);
   update();
   let TID = setInterval(() => {
     if (locationChanged) {
@@ -188,13 +201,15 @@ async function init(city) {
 function getPrayerDate(time) {
   let string = time;
   let objectTimeCode = time.substr(time.length-2);
-  if (objectTimeCode == "pm") {
-    let modifiedHours = parseInt(time.substr(0, 2))+12;
-    let newTime = modifiedHours.toString() + ":" + time.substr(2);
-    string = newTime.substring(0, newTime.length-3);
-  } else {
-    string = string.substring(0, string.length-3);
-  }
+  if (!customCity) {
+    if (objectTimeCode == "pm") {
+      let modifiedHours = parseInt(time.substr(0, 2))+12;
+      let newTime = modifiedHours.toString() + ":" + time.substr(2);
+      string = newTime.substring(0, newTime.length-3);
+    } else {
+      string = string.substring(0, string.length-3);
+    }
+  } 
   const hours = string.substr(0, (string.length == 5) ? 2 : 1);
   const minutes = string.substr(string.length-2, 2);
   let date = new Date(now.toDateString());
@@ -222,24 +237,29 @@ function msToTime(ms) {
   }
   return {hours, minutes, seconds};
 }
-function getNextPrayer() {
-  let closest = prayerTimes[0] - now;
-  let closestPrayer = prayers[0];
-
-  prayerTimes.forEach((time, i) => {
-    if (time - now < closest) {
-      closest = time;
-      closestPrayer = prayers[i];
+function setNextPrayer(first) {
+  if (!first) {
+    nextPrayerIndex += 1;
+    if (nextPrayerIndex >= prayers.length) {
+      nextPrayerIndex = 0;
     }
-  });
-  if (closestPrayer != nextPrayer) {
-    nextPrayer = closestPrayer;
-    nextPrayerDisplays.forEach((display) => {
-      display.textContent = nextPrayer;
+  } else {
+    let closest = prayerTimes[0] - now;
+    let index = 0;
+    prayerTimes.forEach((time, i) => {
+      let diff = time - now;
+      if (diff <= closest) {
+        closest = diff;
+        index = i;
+      }
     });
-    prayerTimeDisplay.textContent = rawPrayerTimes[prayers.indexOf(closestPrayer)];
+    nextPrayerIndex = index;
   }
-  return prayers.indexOf(closestPrayer);
+  let nextPrayer = prayers[nextPrayerIndex];
+  nextPrayerDisplays.forEach((display) => {
+    display.textContent = nextPrayer;
+  });
+  prayerTimeDisplay.textContent = rawPrayerTimes[nextPrayerIndex];
 }
 function format(string) {
   if (string < 10) {
@@ -286,15 +306,15 @@ async function endCountdown() {
   pauseCounter = 0;
   if (nextPrayerIndex == 1) {
     $('.content').prepend(
-      "<img id='dua' src='" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
+      "<img id='dua' src='media/" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
     );
   }
   $('.options').css({
     "margin-bottom":$(".options").height() / 2
   });
-  nextPrayerIndex = getNextPrayer();
+  setNextPrayer(false);
   if (playAdhan) {
-    const adhan = new Audio((fullAdhan) ? "Adhan-Egypt.mp3" : "Abdul-Basit-trimmed.mp3");
+    const adhan = new Audio((fullAdhan) ? "media/Adhan-Egypt.mp3" : "media/Abdul-Basit-trimmed.mp3");
     adhan.type = 'audio/wav';
     try {
       await adhan.play();
@@ -302,18 +322,19 @@ async function endCountdown() {
       console.log(err);
     }
   }
+
 }
 function adaptUI() {
-  if (document.body.clientWidth < 750 && !resizedDown) {
+  if (document.body.clientWidth < 790 && !resizedDown) {
     resizedDown = true;
     resizedUp = false;
-    $('.options').detach().appendTo($('.content'));
-    document.querySelector(".options").classList.add("resized-options");
-  } else if (document.body.clientWidth > 750 && !resizedUp) {
+    $('#adhan-options').detach().appendTo($('.content'));
+    document.getElementById("adhan-options").classList.add("resized-options");
+  } else if (document.body.clientWidth > 790 && !resizedUp) {
     resizedDown = false;
     resizedUp = true;
-    $('.options').detach().insertBefore($('#next-prayer-wrapper'));
-    document.querySelector(".options").classList.remove("resized-options");
+    $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
+    document.getElementById("adhan-options").classList.remove("resized-options");
   }
 }
 function errorScreen() {

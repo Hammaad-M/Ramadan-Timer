@@ -5,8 +5,8 @@ const app = express();
 const port = process.env.port || 8080;
 const citiesOfClients = [];
 
+app.use(express.static(__dirname + '/public'));
 app.listen(port, () => console.log("Listening at port " + port));
-app.use(express.static('public'));
 app.use(express.json({limit : '5gb'}));
 
 async function getLocalCityTime(zone) {
@@ -25,15 +25,17 @@ app.post('/client', (request) => {
         console.log(citiesOfClients);
     }
 });
-app.post('/localCityTime', async (request, response) => {
+app.post('/customCity', async (request, response) => {
     const info = request.body;
     const city = info.city;
     const cityLookup = cityTimezones.lookupViaCity(city);
     if (cityLookup.length != 0) {
         const res = await getLocalCityTime(cityLookup[0].timezone);
+        console.log(res);
         response.json({
             status: 200,
-            formatted: res.formatted
+            formattedTime: res.formatted,
+            countryCode: res.countryCode
         });
     } else {
         response.json({
