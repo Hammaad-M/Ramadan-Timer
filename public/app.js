@@ -91,7 +91,6 @@ function update() {
     unix += 1;
     now = new Date(unix * 1000);
   } 
-  console.log(to12hrTime(now))
   currentTime.textContent = to12hrTime(now);
   if (pauseCounter > 14) {
     if (pauseCounter == 15) {
