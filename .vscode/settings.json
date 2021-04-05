@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/bde19260-c355-4da1-8d44-7bfb47838314/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/ramadan-timer",
+    "appService.deploySubpath": "."
+}
