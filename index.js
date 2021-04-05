@@ -2,7 +2,7 @@ const express = require('express');
 const cityTimezones = require('city-timezones');
 const fetch = require('node-fetch');
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.port || 8080;
 const citiesOfClients = [];
 
 app.listen(port, () => console.log("Listening at port " + port));
