@@ -12,15 +12,6 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body onload="init(null)">
-  <section id="adhan-options" class="options resized-options">
-    <p class="subtitles">Adhan Mode: </p>
-    <label class="subtitles" for="full-adhan">Full </label>
-    <input class="subtitles" type="radio" name="adhan-options" value="full-adhan" onchange="changeAdhanMode('full')"><br>
-    <label class="subtitles" for="short-adhan">Short </label>
-    <input class="subtitles" type="radio" name="adhan-options" value="short-adhan" onchange="changeAdhanMode('short')"><br>
-    <label class="subtitles" for="off-adhan">Off </label>
-    <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
-  </section>
   <div class="subtitles">
     Your Time: <span style="font-weight:600; font-size: 20px; letter-spacing: 3px;" id="current-time"></span>
     | <span id="location"></span>
@@ -42,6 +33,15 @@
       <button class="user-input" id="change-location" onclick="changeLocation()">Change Location</button>
     </p>
   </div>
+  <section id="adhan-options" class="options resized-options">
+    <p class="subtitles">Adhan Mode: </p>
+    <label class="subtitles" for="full-adhan">Full </label>
+    <input class="subtitles" type="radio" name="adhan-options" value="full-adhan" onchange="changeAdhanMode('full')"><br>
+    <label class="subtitles" for="short-adhan">Short </label>
+    <input class="subtitles" type="radio" name="adhan-options" value="short-adhan" onchange="changeAdhanMode('short')"><br>
+    <label class="subtitles" for="off-adhan">Off </label>
+    <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
+  </section>
   <p class="subtitles reference">@2021 by <a href="http://www.hammaadmemon.com">Hammaad Memon</a></p>
   <script src="app.js"></script>
 </body>

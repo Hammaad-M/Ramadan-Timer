@@ -116,6 +116,7 @@ function update() {
     
     if (remaining.seconds == 0 && remaining.minutes == 0 && remaining.hours == 0) {
       endCountdown();
+      setNextPrayer(false);
     } else {
       countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
     }
@@ -306,15 +307,14 @@ async function endCountdown() {
   pauseCounter = 0;
   if (nextPrayerIndex == 1) {
     $('.content').prepend(
-      "<img id='dua' src='media/" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
+      "<img id='dua' src='http://azureassets.azureedge.net/media/" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
     );
   }
   $('.options').css({
     "margin-bottom":$(".options").height() / 2
   });
-  setNextPrayer(false);
   if (playAdhan) {
-    const adhan = new Audio((fullAdhan) ? "media/Adhan-Egypt.mp3" : "media/Abdul-Basit-trimmed.mp3");
+    const adhan = new Audio((fullAdhan) ? "http://azureassets.azureedge.net/media/Adhan-Egypt.mp3" : "http://azureassets.azureedge.net/media/Abdul-Basit-trimmed.mp3");
     adhan.type = 'audio/wav';
     try {
       await adhan.play();
