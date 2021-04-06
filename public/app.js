@@ -15,6 +15,7 @@ let playAdhan = false;
 let fullAdhan = false;
 let resizedDown = false;
 let resizedUp = false;
+const adhan = new Audio();
 const duas = ["", "iftar-dua.png"];
 const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
 const countdown = document.getElementById("countdown");
@@ -292,6 +293,10 @@ function changeLocation() {
   }
 }
 function changeAdhanMode(mode) {
+  // Little audio workaround for those safari users
+  adhan.play();
+  adhan.pause();
+  adhan.currentTime = 0;
   if (mode == "full") {
     playAdhan = true;
     fullAdhan = true;
@@ -314,7 +319,7 @@ async function endCountdown() {
     "margin-bottom":$(".options").height() / 2
   });
   if (playAdhan) {
-    const adhan = new Audio((fullAdhan) ? "http://azureassets.azureedge.net/media/Adhan-Egypt.mp3" : "http://azureassets.azureedge.net/media/Abdul-Basit-trimmed.mp3");
+    adhan.src = ((fullAdhan) ? "http://azureassets.azureedge.net/media/Adhan-Egypt.mp3" : "http://azureassets.azureedge.net/media/Abdul-Basit-trimmed.mp3");
     adhan.type = 'audio/wav';
     try {
       await adhan.play();
