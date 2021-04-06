@@ -58,7 +58,7 @@ async function getTimes(data, useIP) {
       })
     } else {
       await jQuery(async ($) => {
-        $.getJSON('http://api.aladhan.com/v1/timingsByCity?city=' + data + '&country=' + customCountryCode, (response) => {
+        $.getJSON('https://api.aladhan.com/v1/timingsByCity?city=' + data + '&country=' + customCountryCode, (response) => {
           if (response.status != "OK") {
             citySupported = false;
             alert("City not supported.")
