@@ -108,13 +108,6 @@ function update() {
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
     
-    if (first == 5) {
-      remaining.hours = 0;
-      remaining.seconds = 0;
-      remaining.minutes = 0;
-    }
-    first+=1;
-    
     if (remaining.seconds == 0 && remaining.minutes == 0 && remaining.hours == 0) {
       endCountdown();
       setNextPrayer(false);
