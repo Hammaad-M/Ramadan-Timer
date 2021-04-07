@@ -285,12 +285,8 @@ function setNextPrayer(first) {
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
   });
-  if (rawPrayerTimes[nextPrayerIndex].indexOf("m") < 0) {
-    let raw = to12hrTime(new Date("1995-12-17T" + rawPrayerTimes[nextPrayerIndex]));
-    prayerTimeDisplay.textContent = raw.replace(":00", "");
-  } else {
-    prayerTimeDisplay.textContent = rawPrayerTimes[nextPrayerIndex];
-  }
+  prayerTimeDisplay.textContent = to12hrDisplayTime(rawPrayerTimes[nextPrayerIndex]);;
+  
 }
 function format(string) {
   if (string < 10) {
@@ -305,6 +301,19 @@ function to12hrTime(date) {
   const minutes = "0" + date.getMinutes();
   const seconds = "0" + date.getSeconds();
   return newHours + ':' + minutes.substr(minutes.length-2, 2) + ':' + seconds.substr(seconds.length-2, 2) + " " + suffix;
+}
+function to12hrDisplayTime(string) {
+  if (string.indexOf("m") < 0) {
+    let hours = parseInt(string.substr(0, 2));
+    let suffix = " am";
+    if (hours > 12) {
+      hours -= 12;
+      suffix = " pm";
+    }
+    return hours + string.substr(2, 3) + suffix;
+  } else {
+    return string;
+  }
 }
 function changeLocation() {
   changingLocation = !changingLocation;
@@ -327,7 +336,7 @@ function displayAllPrayerTimes(times) {
   document.getElementById("all-prayer-times").innerHTML = "";
   times.forEach((time, i) => {
     $('#all-prayer-times').append(
-      `<div><p class='hover-response subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${time}</span></p></div>`
+      `<div><p class='hover-response subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${to12hrDisplayTime(time)}</span></p></div>`
     );
   });
 }
