@@ -285,7 +285,7 @@ function setNextPrayer(first) {
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
   });
-  prayerTimeDisplay.textContent = to12hrDisplayTime(rawPrayerTimes[nextPrayerIndex]);;
+  prayerTimeDisplay.textContent = to12hrDisplayTime(rawPrayerTimes[nextPrayerIndex]);
   
 }
 function format(string) {
