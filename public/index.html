@@ -12,37 +12,38 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body onload="init(null)">
-  <div class="subtitles">
-    Your Time: <span style="font-weight:600; font-size: 20px; letter-spacing: 3px;" id="current-time"></span>
-    | <span id="location"></span>
-  </div>
-  <br>
-  <p id="next-prayer-wrapper" style="margin-top: 0" class="subtitles">Time To <span class="next-prayer">Fajr</span>:</p>  
-  <div class="content">
-    <h1 id="countdown" class="time-remaining"></h1>
-    <p class="subtitles">
-      <span class="next-prayer">Fajr</span> Time: <span id="prayer-time"></span>
-      <br>
-      <br>
-      <span id="all-prayer-times"></span> 
-      <br>
-      <div class="location-form">
-        <label for="city">City: </label>
-        <input class="user-input" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
-      </div>
-      <button class="user-input" id="change-location" onclick="changeLocation()">Change Location</button>
-    </p>
-  </div>
-  <section id="adhan-options" class="options resized-options">
-    <p class="subtitles">Adhan Mode: </p>
-    <label class="subtitles" for="full-adhan">Full </label>
-    <input class="subtitles" type="radio" name="adhan-options" value="full-adhan" onchange="changeAdhanMode('full')"><br>
-    <label class="subtitles" for="short-adhan">Short </label>
-    <input class="subtitles" type="radio" name="adhan-options" value="short-adhan" onchange="changeAdhanMode('short')"><br>
-    <label class="subtitles" for="off-adhan">Off </label>
-    <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
+  <section class="loading">
+    <h1 class="loading">Fetching Data</h1>
+    <h2 class="loading">Please Wait</h2>
   </section>
-  <p class="subtitles reference">@2021 by <a href="http://www.hammaadmemon.com">Hammaad Memon</a></p>
+  <section class="page">
+    <div class="subtitles">
+      Your Time: <span id="current-time"></span>
+    </div>
+    <p id="next-prayer-wrapper" style="margin-top: 0" class="subtitles">Time To <span class="next-prayer">Fajr</span>:</p>  
+    <div class="content">
+      <h1 id="countdown" class="time-remaining"></h1>
+      <p class="subtitles">
+        <span class="next-prayer">Fajr</span> Time: <span id="prayer-time"></span> | <span id="location"></span>
+        <div class="resizable" id="all-prayer-times"></div> 
+        <div class="location-form">
+          <label for="city">City: </label>
+          <input class="user-input" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
+        </div>
+        <button class="user-input" id="change-location" onclick="changeLocation()">Change Location</button>
+      </p>
+    </div>
+    <section id="adhan-options" class="options resized resizable">
+      <p class="subtitles">Adhan Mode: </p>
+      <label class="subtitles" for="full-adhan">Full </label>
+      <input class="subtitles" type="radio" name="adhan-options" value="full-adhan" onchange="changeAdhanMode('full')"><br>
+      <label class="subtitles" for="short-adhan">Short </label>
+      <input class="subtitles" type="radio" name="adhan-options" value="short-adhan" onchange="changeAdhanMode('short')"><br>
+      <label class="subtitles" for="off-adhan">Off </label>
+      <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
+    </section>
+    <p class="subtitles reference">@2021 by <a href="http://www.hammaadmemon.com">Hammaad Memon</a></p>
+  </section>
   <script src="app.js"></script>
 </body>
 </html>

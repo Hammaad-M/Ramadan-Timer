@@ -15,6 +15,10 @@ let playAdhan = false;
 let fullAdhan = false;
 let resizedDown = false;
 let resizedUp = false;
+let myCity = null;
+let alertEffect = false;
+// ttt
+let temp = 10
 const adhan = new Audio();
 const duas = ["", "iftar-dua.png"];
 const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
@@ -107,17 +111,30 @@ function update() {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
-    
-    if (remaining.seconds == 0 && remaining.minutes == 0 && remaining.hours == 0) {
-      endCountdown();
-      setNextPrayer(false);
+    // ttt
+    // remaining.hours = 0; remaining.minutes = 0; remaining.seconds = temp;
+    // temp -= 1;
+    if (remaining.hours == 0 && remaining.minutes == 0) {
+      if (remaining.seconds == 0) {
+        endCountdown();
+        setNextPrayer(false);
+      } else {
+        createAlertEffects(remaining.seconds);
+        updateCountdown(remaining);
+      }
     } else {
-      countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
+      updateCountdown(remaining);
+      if (alertEffect) {
+        eraseAlertEffects();
+      }
     }
   } else {
     pauseCounter += 1;
   }
   adaptUI();
+}
+function updateCountdown(remaining) {
+  countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
 }
 async function getCustomCityData(city) {
   console.log("1");
@@ -131,7 +148,7 @@ async function getCustomCityData(city) {
   const res = await response.json();
   if (res.status == 404) {
     alert("Unable to get current time for your city...try entering a local major city instead.");
-    return null;
+    init(null);
   } else {
     customCountryCode = res.countryCode;
     return new Date(res.formattedTime).getTime() / 1000;
@@ -139,12 +156,16 @@ async function getCustomCityData(city) {
   
 }
 async function init(city) { 
+  document.querySelector(".page").style.display = "none";
+  document.querySelector(".loading").style.display = "initial";
+  if (myCity != null && city == myCity) {
+    city = null;
+  }
   prayerTimes = [];
   rawPrayerTimes = [];
   nextPrayer = "";
   let times;
   let location;
-  console.log(city);
   if (city == null) {
     location = await getLocation();
     locationForm.style.display = "none";
@@ -162,7 +183,7 @@ async function init(city) {
       customCity = true;
     }
   }
-  allPrayerTimes.textContent = `Fajr: ${times[0]} | Dhuhr: ${times[1]} | Asr: ${times[2]} | Maghrib: ${times[3]} | Isha: ${times[4]}`;
+  displayAllPrayerTimes(times);
   times = [times[0], times[3]];
   location = location.substr(0, 1).toUpperCase() + location.substring(1);
   cityDisplay.textContent = location;
@@ -181,6 +202,8 @@ async function init(city) {
     });
   }
   setNextPrayer(true);
+  $("section.loading, h1.loading, h2.loading").fadeOut(500);
+  setTimeout(() => (document.querySelector(".page").style.display = "initial"), 700);
   update();
   let TID = setInterval(() => {
     if (locationChanged) {
@@ -250,6 +273,12 @@ function setNextPrayer(first) {
     });
     nextPrayerIndex = index;
   }
+  if (nextPrayerIndex == 0) {
+    document.body.style.backgroundColor = "rgba(40, 73, 10, 0.925)";
+  } else {
+    // document.body.style.backgroundColor = "rgba(109, 30, 30, 0.959)";
+  }
+  
   let nextPrayer = prayers[nextPrayerIndex];
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
@@ -285,6 +314,14 @@ function changeLocation() {
     }
   }
 }
+function displayAllPrayerTimes(times) {
+  let prayerList = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+  times.forEach((time, i) => {
+    $('#all-prayer-times').append(
+      `<p class='subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${time}</span></p>`
+    );
+  });
+}
 function changeAdhanMode(mode) {
   // Little audio workaround for those safari users
   adhan.play();
@@ -305,14 +342,14 @@ async function endCountdown() {
   pauseCounter = 0;
   if (nextPrayerIndex == 1) {
     $('.content').prepend(
-      "<img id='dua' src='http://azureassets.azureedge.net/media/" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
+      "<img id='dua' src='https://azureassets.azureedge.net/media/" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
     );
   }
   $('.options').css({
     "margin-bottom":$(".options").height() / 2
   });
   if (playAdhan) {
-    adhan.src = ((fullAdhan) ? "http://azureassets.azureedge.net/media/Adhan-Egypt.mp3" : "http://azureassets.azureedge.net/media/Abdul-Basit-trimmed.mp3");
+    adhan.src = ((fullAdhan) ? "https://azureassets.azureedge.net/media/Adhan-Egypt.mp3" : "https://azureassets.azureedge.net/media/Abdul-Basit-trimmed.mp3");
     adhan.type = 'audio/wav';
     try {
       await adhan.play();
@@ -322,17 +359,32 @@ async function endCountdown() {
   }
 
 }
+function createAlertEffects(s) {
+  if (s % 2 == 0) {
+    let color = (nextPrayerIndex == 1) ? "green" : "red"
+    countdown.style.textShadow = "0 0 30px " + color;
+  } else {
+    eraseAlertEffects();
+  }
+}
+function eraseAlertEffects() {
+  countdown.style.textShadow = "0 0 10px black";
+}
 function adaptUI() {
   if (document.body.clientWidth < 790 && !resizedDown) {
     resizedDown = true;
     resizedUp = false;
     $('#adhan-options').detach().appendTo($('.content'));
-    document.getElementById("adhan-options").classList.add("resized-options");
+    $('#all-prayer-times').detach().appendTo($('.content'));
+    allPrayerTimes.classList.add("resized");
+    document.getElementById("adhan-options").classList.add("resized");
   } else if (document.body.clientWidth > 790 && !resizedUp) {
     resizedDown = false;
     resizedUp = true;
     $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
-    document.getElementById("adhan-options").classList.remove("resized-options");
+    $('#all-prayer-times').detach().insertBefore($('.location-form'));
+    allPrayerTimes.classList.remove("resized");
+    document.getElementById("adhan-options").classList.remove("resized");
   }
 }
 function errorScreen() {

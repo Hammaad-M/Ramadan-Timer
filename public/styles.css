@@ -1,15 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap');
 body {
     padding: 10px;
-    margin: 0;
-    background-color: rgba(40, 73, 10, 0.925);
+    margin: 0;;
     font-family: 'Kanit',sans-serif;
+    background-color: rgb(95, 20, 10);
     text-align: center;
     color: white;
     overflow-x: hidden;
 }
 input[type='radio'] {
     float: right;
+    margin-top: 5px;
 }
 .content {
     width: 100%;
@@ -42,13 +43,17 @@ input[type='radio'] {
     margin-bottom: 0.4em;
     margin: 0;
 }
+#current-time {
+    font-weight:600; 
+    font-size: 20px; 
+    letter-spacing: 3px;
+}
 .reference {
     position: relative;
     text-align: center;
     width: max-content;
     margin: 0 auto;
     margin-top: 8em;
-
 }
 @media only screen and (max-width: 500px) {
     #countdown {
@@ -69,6 +74,9 @@ input[type='radio'] {
         font-size: 62px;
         text-shadow: 0 0 5px black;
     }
+    #current-time {
+        font-size: 14px;
+    }
 }
 @media only screen and (max-width: 350px) {
     #countdown {
@@ -88,6 +96,11 @@ input[type='radio'] {
         font-size: 100px;
     }
 }
+@media only screen and (max-width: 800px) {
+    .loading {
+        font-size: 10px;
+    }
+}
 @media only screen and (min-width: 900px) {
     .reference {
         position: absolute;
@@ -102,24 +115,48 @@ input[type='radio'] {
         font-size: 130px;
     }
 }
-.options {
-    float: right;
+.resizable {
     position: absolute;
     top: 0;
-    right: 0;
-    padding: 10px;
-    margin-top: 0;
     border: 2px solid white;
-    border-radius: 5px;
+    border-radius: 10px;
     height: max-content;
     width: max-content;
+    padding: 10px;
     margin: 10px;
+}
+.options {
+    float: right;
+    right: 0;
     text-align: right;
 }
-.resized-options {
+.resized {
     text-align: center;
     position: relative;
     float: initial;
     margin: auto;
 }
-
+#all-prayer-times {
+    margin-top: 1em;
+    text-align: left;
+    letter-spacing: 1px;
+}
+#all-prayer-times span {
+    float: right;
+}
+.loading {
+    width: 100%;
+    transition: opacity 3s linear 0s;
+    height: 100%;
+}
+.loading h1 {
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-align: center;
+    font-size: 5ch;
+    margin-top: 1em;
+}
+.loading h2 {
+    font-size: 3ch;
+    letter-spacing: 3px;
+}
