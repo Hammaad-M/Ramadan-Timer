@@ -30,10 +30,11 @@
           <label for="city">City: </label>
           <input class="user-input" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
         </div>
-        <button class="user-input" id="change-location" onclick="changeLocation()">Change Location</button>
+        <button class="user-input hover-response " id="change-location" onclick="changeLocation()">Change Location</button>
       </p>
+      <section id="mobile-options-wrapper"></section>
     </div>
-    <section id="adhan-options" class="options resized resizable">
+    <div id="adhan-options" class="hover-response options resized resizable">
       <p class="subtitles">Adhan Mode: </p>
       <label class="subtitles" for="full-adhan">Full </label>
       <input class="subtitles" type="radio" name="adhan-options" value="full-adhan" onchange="changeAdhanMode('full')"><br>
@@ -41,7 +42,7 @@
       <input class="subtitles" type="radio" name="adhan-options" value="short-adhan" onchange="changeAdhanMode('short')"><br>
       <label class="subtitles" for="off-adhan">Off </label>
       <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
-    </section>
+    </div>
     <p class="subtitles reference">@2021 by <a href="http://www.hammaadmemon.com">Hammaad Memon</a></p>
   </section>
   <script src="app.js"></script>

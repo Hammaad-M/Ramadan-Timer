@@ -13,8 +13,10 @@ let first = 0;
 let pauseCounter = 16;
 let playAdhan = false;
 let fullAdhan = false;
-let resizedDown = false;
-let resizedUp = false;
+let adhanResizedDown = false;
+let adhanResizedUp = false;
+let prayerResizedUp = false;
+let prayerResizedDown = false;
 let myCity = null;
 let alertEffect = false;
 // ttt
@@ -157,7 +159,7 @@ async function getCustomCityData(city) {
 }
 async function init(city) { 
   document.querySelector(".page").style.display = "none";
-  document.querySelector(".loading").style.display = "initial";
+  $("section.loading, h1.loading, h2.loading").fadeIn(0);
   if (myCity != null && city == myCity) {
     city = null;
   }
@@ -276,7 +278,7 @@ function setNextPrayer(first) {
   if (nextPrayerIndex == 0) {
     document.body.style.backgroundColor = "rgba(40, 73, 10, 0.925)";
   } else {
-    // document.body.style.backgroundColor = "rgba(109, 30, 30, 0.959)";
+    document.body.style.backgroundColor = "rgba(109, 30, 30, 0.959)";
   }
   
   let nextPrayer = prayers[nextPrayerIndex];
@@ -316,9 +318,10 @@ function changeLocation() {
 }
 function displayAllPrayerTimes(times) {
   let prayerList = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+  document.getElementById("all-prayer-times").innerHTML = "";
   times.forEach((time, i) => {
     $('#all-prayer-times').append(
-      `<p class='subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${time}</span></p>`
+      `<div><p class='hover-response subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${time}</span></p></div>`
     );
   });
 }
@@ -371,21 +374,29 @@ function eraseAlertEffects() {
   countdown.style.textShadow = "0 0 10px black";
 }
 function adaptUI() {
-  if (document.body.clientWidth < 790 && !resizedDown) {
-    resizedDown = true;
-    resizedUp = false;
-    $('#adhan-options').detach().appendTo($('.content'));
-    $('#all-prayer-times').detach().appendTo($('.content'));
-    allPrayerTimes.classList.add("resized");
+  if (document.body.clientWidth < 790 && !adhanResizedDown) {
+    adhanResizedDown = true;
+    adhanResizedUp = false;
+    $('#adhan-options').detach().appendTo($('#mobile-options-wrapper'));
     document.getElementById("adhan-options").classList.add("resized");
-  } else if (document.body.clientWidth > 790 && !resizedUp) {
-    resizedDown = false;
-    resizedUp = true;
+  } else if (document.body.clientWidth > 790 && !adhanResizedUp) {
+    adhanResizedDown = false;
+    adhanResizedUp = true;
     $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
-    $('#all-prayer-times').detach().insertBefore($('.location-form'));
-    allPrayerTimes.classList.remove("resized");
     document.getElementById("adhan-options").classList.remove("resized");
   }
+  if (document.body.clientWidth < 1100 && !prayerResizedDown) {
+    prayerResizedDown = true;
+    prayerResizedUp = false;
+    $('#all-prayer-times').detach().appendTo($('#mobile-options-wrapper'));
+    allPrayerTimes.classList.add("resized");
+  } else if (document.body.clientWidth > 1100 && !prayerResizedUp) {
+    prayerResizedDown = false;
+    prayerResizedUp = true;
+    $('#all-prayer-times').detach().insertBefore($('.location-form'));
+    allPrayerTimes.classList.remove("resized");
+  }
+  
 }
 function errorScreen() {
   // There was a problem getting prayer times...please try again later or contact support

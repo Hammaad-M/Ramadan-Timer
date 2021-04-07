@@ -3,10 +3,12 @@ body {
     padding: 10px;
     margin: 0;;
     font-family: 'Kanit',sans-serif;
-    background-color: rgb(95, 20, 10);
     text-align: center;
     color: white;
     overflow-x: hidden;
+}
+:root {
+    --sub-background: rgba(238, 238, 238, 0.1);
 }
 input[type='radio'] {
     float: right;
@@ -23,7 +25,10 @@ input[type='radio'] {
 .content button {
     padding: 7px;
     margin-top: 10px;
-    background-color: white;
+    background-color: var(--sub-background);
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
 }
 .location-form input {
     padding: 5px;
@@ -34,6 +39,16 @@ input[type='radio'] {
     border-radius: 5px;
     border: 2px solid black;
     font-family: 'Kanit', sans-serif;
+}
+.hover-response {
+    transition: 0.3s;
+}
+.hover-response:hover {
+    background-color: rgba(238, 238, 238, 1) !important;
+    color: black !important;
+    border: 2px solid black !important;
+    border-radius: 5px !important;
+    padding: 8px !important;
 }
 #countdown {
     font-size: 100px;
@@ -57,7 +72,7 @@ input[type='radio'] {
 }
 @media only screen and (max-width: 500px) {
     #countdown {
-        font-size: 72px;
+        font-size: 78px;
         text-shadow: 0 0 5px black;
     }
     .content button {
@@ -66,12 +81,12 @@ input[type='radio'] {
         font-size: 11px;
     }
     .subtitles {
-        font-size: 12px;
+        font-size: 14px;
     }
 }
 @media only screen and (max-width: 400px) {
     #countdown {
-        font-size: 62px;
+        font-size: 63px;
         text-shadow: 0 0 5px black;
     }
     #current-time {
@@ -80,7 +95,7 @@ input[type='radio'] {
 }
 @media only screen and (max-width: 350px) {
     #countdown {
-        font-size: 45px;
+        font-size: 48px;
     }
     .user-input {
         font-size: 10px;
@@ -115,15 +130,23 @@ input[type='radio'] {
         font-size: 130px;
     }
 }
+#mobile-options-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+#mobile-options-wrapper > * {
+    margin: 0;
+    margin-right: 0.5em;
+}
 .resizable {
     position: absolute;
     top: 0;
-    border: 2px solid white;
     border-radius: 10px;
     height: max-content;
     width: max-content;
     padding: 10px;
-    margin: 10px;
+    margin: 0;
 }
 .options {
     float: right;
@@ -135,18 +158,35 @@ input[type='radio'] {
     position: relative;
     float: initial;
     margin: auto;
+    display: inline-block;
+    margin-right: 20px;
+}
+#adhan-options {
+    background-color: var(--sub-background);
+    border: 1px solid white;
+    margin: 5px;
+    border-radius: 3px;
 }
 #all-prayer-times {
-    margin-top: 1em;
+    padding-top: 4px;
     text-align: left;
     letter-spacing: 1px;
 }
 #all-prayer-times span {
     float: right;
 }
+#all-prayer-times p {
+    background-color: var(--sub-background);
+    border: 1px solid white;
+    margin: 0;
+    margin-bottom: 6px;
+    padding: 5px;
+    border-radius: 2px;
+}
+
+
 .loading {
     width: 100%;
-    transition: opacity 3s linear 0s;
     height: 100%;
 }
 .loading h1 {
