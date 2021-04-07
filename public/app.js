@@ -80,7 +80,6 @@ async function getTimes(data, useIP) {
               timings.Maghrib, 
               timings.Isha
             );
-            console.log(times);
             resolve(times);
           }
         });
@@ -139,7 +138,6 @@ function updateCountdown(remaining) {
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
 }
 async function getCustomCityData(city) {
-  console.log("1");
   const response = await fetch('/customCity', {
     method: 'POST',
     headers: {
@@ -160,9 +158,9 @@ async function getCustomCityData(city) {
 async function init(city) { 
   document.querySelector(".page").style.display = "none";
   $("section.loading, h1.loading, h2.loading").fadeIn(0);
-  if (myCity != null && city == myCity) {
+  if (city != null && city == myCity) {
     city = null;
-  }
+  } 
   prayerTimes = [];
   rawPrayerTimes = [];
   nextPrayer = "";
@@ -177,13 +175,15 @@ async function init(city) {
     times = data.times;
   } else {
     location = city;
-    console.log(location);
     unix = await getCustomCityData(city);
     times = await getTimes(location, false);
     if (unix != null) {
       now = new Date(unix*1000);
       customCity = true;
     }
+  }
+  if (myCity == null) {
+    myCity = location.toLowerCase();
   }
   displayAllPrayerTimes(times);
   times = [times[0], times[3]];
@@ -211,7 +211,7 @@ async function init(city) {
     if (locationChanged) {
       clearInterval( TID );
       locationChanged = false;
-      init(locationInput.value);
+      init(locationInput.value.toLowerCase());
     } else {
       update();
     }
@@ -285,7 +285,8 @@ function setNextPrayer(first) {
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
   });
-  prayerTimeDisplay.textContent = rawPrayerTimes[nextPrayerIndex];
+  let raw = to12hrTime(new Date("January 1, 1995 " + rawPrayerTimes[nextPrayerIndex] + ":00"));
+  prayerTimeDisplay.textContent = raw.replace(":00", "");
 }
 function format(string) {
   if (string < 10) {
@@ -309,7 +310,8 @@ function changeLocation() {
     changeLocationButton.textContent = "go";
   } else {
     if (locationInput.value.length != 0) {
-      $('#change-location').detach().appendTo($('.content'));
+      $('#info').append('<br>');
+      $('#change-location').detach().appendTo($('#info'));
       locationForm.style.display = "none";
       changeLocationButton.textContent = "Change Location";
       locationChanged = true;
