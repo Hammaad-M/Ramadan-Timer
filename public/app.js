@@ -285,8 +285,12 @@ function setNextPrayer(first) {
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
   });
-  let raw = to12hrTime(new Date("January 1, 1995 " + rawPrayerTimes[nextPrayerIndex] + ":00"));
-  prayerTimeDisplay.textContent = raw.replace(":00", "");
+  if (rawPrayerTimes[nextPrayerIndex].indexOf("m") < 0) {
+    let raw = to12hrTime(new Date("1995-12-17T" + rawPrayerTimes[nextPrayerIndex]));
+    prayerTimeDisplay.textContent = raw.replace(":00", "");
+  } else {
+    prayerTimeDisplay.textContent = rawPrayerTimes[nextPrayerIndex];
+  }
 }
 function format(string) {
   if (string < 10) {
