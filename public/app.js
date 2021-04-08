@@ -200,7 +200,6 @@ async function init(city) {
   $("section.loading, h1.loading, h2.loading").fadeOut(500);
   setTimeout(() => (document.querySelector(".page").style.display = "initial"), 700);
   update();
-  alert(unix);
   let TID = setInterval(() => {
     if (locationChanged) {
       clearInterval( TID );
