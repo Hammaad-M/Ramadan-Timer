@@ -103,8 +103,8 @@ function update() {
   if (!customCity) {
     now = new Date();
   } else {
-    unix += 1;
-    now = new Date(unix * 1000);
+    unix += 1000;
+    now = new Date(unix);
   } 
   currentTime.textContent = to12hrTime(now);
   if (pauseCounter > 14) {
@@ -150,8 +150,7 @@ async function getCustomCityData(city) {
     alert("Unable to get current time for your city...try entering a local major city instead.");
     init(null);
   } else {
-    customCountryCode = res.countryCode;
-    return new Date(res.formattedTime).getTime() / 1000;
+    return new Date(res.date).getTime();
   }
   
 }
@@ -164,6 +163,7 @@ async function init(city) {
   prayerTimes = [];
   rawPrayerTimes = [];
   nextPrayer = "";
+  nextPrayerIndex = 0;
   let times;
   let location;
   if (city == null) {
@@ -176,13 +176,9 @@ async function init(city) {
   } else {
     location = city;
     unix = await getCustomCityData(city);
+    now = new Date(unix);
     times = await getTimes(location, false);
-    if (unix != null) {
-      now = new Date(unix*1000);
-      customCity = true;
-    } else {
-      window.open("https://ramadantimer.com", "_self");
-    }
+    customCity = true;
   }
   if (myCity == null) {
     myCity = location.toLowerCase();
@@ -325,7 +321,8 @@ function changeLocation() {
     changeLocationButton.textContent = "go";
   } else {
     if (locationInput.value.length != 0) {
-      $('#info').append('<br>');
+      $("#button-seperator").remove();
+      $('#info').append('<br id="button-seperator">');
       $('#change-location').detach().appendTo($('#info'));
       locationForm.style.display = "none";
       changeLocationButton.textContent = "Change Location";
