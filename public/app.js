@@ -272,7 +272,6 @@ function setNextPrayer(first) {
     });
     nextPrayerIndex = index;
   }
-  nextPrayerIndex = 0;
   if (nextPrayerIndex == 0) {
     document.body.style.backgroundColor = "rgba(40, 73, 10, 0.925)";
   } else {
