@@ -144,7 +144,6 @@ async function getCustomCityData(city) {
   if (res.status == 404) {
     errorScreen();
   } else {
-    alert(res.date + " " + to24hrTime(res.time));
     return new Date(res.date + " " + to24hrTime(res.time)).getTime();
   }
   
