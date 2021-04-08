@@ -23,10 +23,11 @@ app.post('/customCity', async (request, response) => {
     const cityLookup = cityTimezones.lookupViaCity(city);
     if (cityLookup.length != 0) {
         const dateObject = ezlocalTime(cityLookup[0].timezone);
+        console.log(dateObject);
         response.json({
             status: 200,
             date: dateObject.date,
-            time: dateObject.time.substring(0)
+            time: dateObject.time.substring(1)
         });
     } else {
         response.json({

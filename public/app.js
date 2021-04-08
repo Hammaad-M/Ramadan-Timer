@@ -150,7 +150,7 @@ async function getCustomCityData(city) {
     alert("Unable to get current time for your city...try entering a local major city instead.");
     init(null);
   } else {
-    return new Date(res.date + "" + to24hrTime(res.time)).getTime();
+    return new Date(res.date + " " + to24hrTime(res.time)).getTime();
   }
   
 }
@@ -238,7 +238,7 @@ function to24hrTime(time) {
     let newTime = modifiedHours.toString() + ":" + time.substr(2);
     return newTime.substring(0, newTime.length-3);
   } else {
-    return string = string.substring(0, string.length-3);
+    return string.substring(0, string.length-3);
   }
 }
 function msToTime(ms) {
