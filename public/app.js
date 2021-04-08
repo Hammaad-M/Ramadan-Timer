@@ -149,7 +149,6 @@ async function getCustomCityData(city) {
   
 }
 async function init(city) { 
-  resetZoom();
   document.querySelector(".page").style.display = "none";
   $("section.loading, h1.loading, h2.loading").fadeIn(0);
   if (city != null && city == myCity) {
@@ -431,12 +430,6 @@ function adaptUI() {
     allPrayerTimes.classList.remove("resized");
   }
   
-}
-function resetZoom() {
-  let scale = 'scale(1)';
-  document.body.style.webkitTransform =  scale;    // Chrome, Opera, Safari
-  document.body.style.msTransform =   scale;       // IE 9
-  document.body.style.transform = scale;
 }
 function errorScreen() {
   countdown.innerHTML = "Unable to get data for your location.";
