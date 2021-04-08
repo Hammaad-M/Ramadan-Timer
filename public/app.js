@@ -19,8 +19,6 @@ let prayerResizedUp = false;
 let prayerResizedDown = false;
 let myCity = null;
 let alertEffect = false;
-// ttt
-let temp = 10
 const adhan = new Audio();
 const duas = ["", "iftar-dua.png"];
 const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
@@ -112,9 +110,6 @@ function update() {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
-    // ttt
-    // remaining.hours = 0; remaining.minutes = 0; remaining.seconds = temp;
-    // temp -= 1;
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
@@ -277,6 +272,7 @@ function setNextPrayer(first) {
     });
     nextPrayerIndex = index;
   }
+  nextPrayerIndex = 0;
   if (nextPrayerIndex == 0) {
     document.body.style.backgroundColor = "rgba(40, 73, 10, 0.925)";
   } else {
@@ -382,14 +378,20 @@ async function endCountdown() {
 }
 function createAlertEffects(s) {
   if (s % 2 == 0) {
-    let color = (nextPrayerIndex == 1) ? "green" : "red"
-    countdown.style.textShadow = "0 0 30px " + color;
+    let color = (nextPrayerIndex == 1) ? "rgb(51,255,119)" : "rgb(255,51,51)";
+    if (nextPrayerIndex == 0) {
+      countdown.style.textShadow = "0 0 15px white";
+    } else {
+      countdown.style.textShadow = "0 0 15px " + color;
+    }
+    countdown.style.color = color;
   } else {
     eraseAlertEffects();
   }
 }
 function eraseAlertEffects() {
   countdown.style.textShadow = "0 0 10px black";
+  countdown.style.color = "white";
 }
 function adaptUI() {
   if (document.body.clientWidth < 790 && !adhanResizedDown) {
