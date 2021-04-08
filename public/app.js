@@ -66,8 +66,8 @@ async function getTimes(data, useIP) {
         $.getJSON('https://api.aladhan.com/v1/timingsByCity?city=' + data + '&country=' + customCountryCode, (response) => {
           if (response.status != "OK") {
             citySupported = false;
-            alert("City not supported.")
-            init(null);
+            alert("Unable to get prayer times for your city...try using a local major city instead.")
+            window.location.reload();
           } else {
             citySupported = true;
             const timings = response.data.timings;
@@ -90,8 +90,8 @@ async function getLocation() {
     await jQuery(async ($) => {
       $.getJSON('https://ipapi.co/json/', (data) => {
         if (!data) {
-          alert("Unable to get location. Defaulting to Bellevue.");
-        }
+          errorScreen();
+        } 
         resolve(data);
       });
     })
@@ -142,9 +142,9 @@ async function getCustomCityData(city) {
   });
   const res = await response.json();
   if (res.status == 404) {
-    alert("Unable to get current time for your city...try entering a local major city instead.");
-    init(null);
+    errorScreen();
   } else {
+    alert(res.date + " " + to24hrTime(res.time));
     return new Date(res.date + " " + to24hrTime(res.time)).getTime();
   }
   
@@ -200,6 +200,7 @@ async function init(city) {
   $("section.loading, h1.loading, h2.loading").fadeOut(500);
   setTimeout(() => (document.querySelector(".page").style.display = "initial"), 700);
   update();
+  alert(unix);
   let TID = setInterval(() => {
     if (locationChanged) {
       clearInterval( TID );
@@ -231,10 +232,25 @@ function to24hrTime(time) {
   if (objectTimeCode.toLowerCase() == "pm") {
     let modifiedHours = parseInt(time.substr(0, 2))+12;
     let newTime = modifiedHours.toString() + ":" + time.substr(2);
-    return newTime.substring(0, newTime.length-3);
+    let check = newTime.substring(0, newTime.length-3);
+    if (charCount(check, ":") >= 3) {
+      check = check.replace(":", "");
+    }
+    return check;
   } else {
     return string.substring(0, string.length-3);
   }
+}
+function charCount(str, letter) 
+{
+ let letter_Count = 0;
+ for (let i = 0; i < str.length; i++) 
+ {
+    if (str.charAt(i) == letter) {
+      letter_Count += 1;
+    }
+  }
+  return letter_Count;
 }
 function msToTime(ms) {
   ms = Math.abs(ms);
@@ -418,5 +434,5 @@ function adaptUI() {
   
 }
 function errorScreen() {
-  document.body.innerHTML = "There was a problem getting prayer times...please try again later";
+  countdown.innerHTML = "Unable to get data for your location.";
 }
