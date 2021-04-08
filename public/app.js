@@ -180,6 +180,8 @@ async function init(city) {
     if (unix != null) {
       now = new Date(unix*1000);
       customCity = true;
+    } else {
+      window.open("https://ramadantimer.com", "_self");
     }
   }
   if (myCity == null) {
@@ -194,7 +196,7 @@ async function init(city) {
     prayerTimes.push(getPrayerDate(time));
   });
   msToFajr = now - prayerTimes[0];
-  if (!customCity) {
+  if (city == null) {
     fetch('/client', {
       method: 'POST',
       headers: {
@@ -414,6 +416,5 @@ function adaptUI() {
   
 }
 function errorScreen() {
-  // There was a problem getting prayer times...please try again later or contact support
   document.body.innerHTML = "There was a problem getting prayer times...please try again later";
 }
