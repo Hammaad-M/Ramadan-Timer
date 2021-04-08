@@ -150,7 +150,7 @@ async function getCustomCityData(city) {
     alert("Unable to get current time for your city...try entering a local major city instead.");
     init(null);
   } else {
-    return new Date(res.date).getTime();
+    return new Date(res.date + "" + to24hrTime(res.time)).getTime();
   }
   
 }
@@ -218,15 +218,8 @@ async function init(city) {
 }
 function getPrayerDate(time) {
   let string = time;
-  let objectTimeCode = time.substr(time.length-2);
   if (!customCity) {
-    if (objectTimeCode == "pm") {
-      let modifiedHours = parseInt(time.substr(0, 2))+12;
-      let newTime = modifiedHours.toString() + ":" + time.substr(2);
-      string = newTime.substring(0, newTime.length-3);
-    } else {
-      string = string.substring(0, string.length-3);
-    }
+    string = to24hrTime(string);
   } 
   const hours = string.substr(0, (string.length == 5) ? 2 : 1);
   const minutes = string.substr(string.length-2, 2);
@@ -236,6 +229,17 @@ function getPrayerDate(time) {
     date.setDate(now.getDate() + 1); 
   }
   return date;
+}
+function to24hrTime(time) {
+  let string = time;
+  let objectTimeCode = time.substr(time.length-2);
+  if (objectTimeCode.toLowerCase() == "pm") {
+    let modifiedHours = parseInt(time.substr(0, 2))+12;
+    let newTime = modifiedHours.toString() + ":" + time.substr(2);
+    return newTime.substring(0, newTime.length-3);
+  } else {
+    return string = string.substring(0, string.length-3);
+  }
 }
 function msToTime(ms) {
   ms = Math.abs(ms);

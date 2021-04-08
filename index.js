@@ -28,7 +28,8 @@ app.post('/customCity', async (request, response) => {
         console.log(new Date(dateObject.date + dateObject.time).toDateString());
         response.json({
             status: 200,
-            date: dateObject.dateTime
+            date: dateObject.date,
+            time: dateObject.time.substring(0)
         });
     } else {
         response.json({
