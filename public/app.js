@@ -149,6 +149,7 @@ async function getCustomCityData(city) {
   
 }
 async function init(city) { 
+  // alert(document.body.clientWidth);
   document.querySelector(".page").style.display = "none";
   $("section.loading, h1.loading, h2.loading").fadeIn(0);
   if (city != null && city == myCity) {

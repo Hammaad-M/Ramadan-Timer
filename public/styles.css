@@ -10,6 +10,10 @@ body {
 :root {
     --sub-background: rgba(238, 238, 238, 0.1);
 }
+input {
+    border: 1px solid white;
+    background-color: white;
+}
 input[type='radio'] {
     float: right;
     margin-top: 5px;
@@ -23,16 +27,17 @@ input[type='radio'] {
     float: center;
 }
 .content button {
-    padding: 7px;
+    padding: 10px;
     margin-top: 10px;
     background-color: var(--sub-background);
     color: white;
     border: 1px solid white;
     border-radius: 4px;
+    font-size: 16px;
 }
 .location-form input {
     padding: 5px;
-    width: 30%;
+    width: 40%;
     max-width: 12em;
 }
 .user-input {
@@ -58,7 +63,7 @@ input[type='radio'] {
     margin-bottom: 0.4em;
     margin: 0;
 }
-#current-time {
+.bold {
     font-weight:600; 
     font-size: 20px; 
     letter-spacing: 3px;
@@ -74,14 +79,23 @@ input[type='radio'] {
     #countdown {
         font-size: 78px;
         text-shadow: 0 0 5px black;
+        margin-bottom: 10px;
     }
     .content button {
-        padding: 5px;
-        margin-top: 10px;
         font-size: 14px;
     }
     .subtitles {
-        font-size: 14px;
+        font-size: 16px;
+    }
+    #info, 
+    #next-prayer-wrapper, 
+    #current-time, 
+    #current-timer-wrapper,
+    .subtitles > label,
+    .bold {
+        font-size: 18px !important;
+        margin: 0;
+        margin-bottom: 8px;
     }
 }
 @media only screen and (max-width: 400px) {
@@ -89,8 +103,8 @@ input[type='radio'] {
         font-size: 63px;
         text-shadow: 0 0 5px black;
     }
-    #current-time {
-        font-size: 14px;
+    .bold {
+        font-size: 16px;
     }
 }
 @media only screen and (max-width: 350px) {
@@ -120,6 +134,12 @@ input[type='radio'] {
     .reference {
         position: absolute;
         bottom: 10px;
+    }
+    #countdown {
+        font-size: 130px;
+    }
+    .subtitles {
+        font-size: 18px;
     }
 }
 @media only screen and (min-width: 1400px) {
