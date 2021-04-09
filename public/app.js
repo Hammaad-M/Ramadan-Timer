@@ -173,11 +173,14 @@ async function init(city) {
   } else {
     location = city;
     unix = await getCustomCityData(city);
-    now = new Date(unix);
-    times = await getTimes(location, false);
+    if (unix > 1) {
+      now = new Date(unix);
+      times = await getTimes(location, false);
+    }
     customCity = true;
   }
   if (!err) {
+    allPrayerTimes.style.display = "initial";
     if (myCity == null) {
       myCity = location.toLowerCase();
     }
@@ -213,7 +216,16 @@ async function init(city) {
       }
     }, 1000); 
   } else {
+    allPrayerTimes.style.display = "none";
     errorScreen();
+    let TID = setInterval(() => {
+      adaptUI();
+      if (locationChanged) {
+        clearInterval( TID );
+        locationChanged = false;
+        init(locationInput.value.toLowerCase());
+      }
+    }, 500); 
   }
 }
 function getPrayerDate(time) {
@@ -339,7 +351,8 @@ function changeLocation() {
     $('#change-location').detach().appendTo(locationForm);
     changeLocationButton.textContent = "go";
   } else {
-    if (locationInput.value.length != 0) {      $('#change-location').detach().insertBefore($('.location-form'));
+    if (locationInput.value.length != 0) {      
+      $('#change-location').detach().insertBefore($('.location-form'));
       locationForm.style.display = "none";
       changeLocationButton.textContent = "Change Location";
       locationChanged = true;
@@ -450,5 +463,5 @@ function errorScreen() {
   toggleLoadingScreen();
   currentTime.textContent = "--";
   countdown.classList.add("err-display");
-  countdown.innerHTML = "Unable to get complete data for your location.";
+  countdown.innerHTML = "Unable to get data for your location. <br> You should consider moving...";
 }
