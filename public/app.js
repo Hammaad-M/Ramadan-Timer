@@ -19,6 +19,8 @@ let prayerResizedUp = false;
 let prayerResizedDown = false;
 let myCity = null;
 let alertEffect = false;
+let err = false;
+let loaded = false;
 const adhan = new Audio();
 const duas = ["", "iftar-dua.png"];
 const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
@@ -31,6 +33,7 @@ const changeLocationButton = document.getElementById("change-location");
 const locationInput = document.getElementById("city-input");
 const currentTime = document.getElementById("current-time");
 const allPrayerTimes = document.getElementById("all-prayer-times");
+const adhanOptions = document.getElementById("adhan-options");
 document.getElementById("adhan-off").checked = true;
 
 async function getTimes(data, useIP) {
@@ -44,7 +47,7 @@ async function getTimes(data, useIP) {
       await jQuery(async ($) => {
         $.getJSON('https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=' + data, (response) => {
           if (response.success == false || !response) {
-            errorScreen();
+            err = true;
           } else {
             times.push(
               response.results.Fajr, 
@@ -90,7 +93,7 @@ async function getLocation() {
     await jQuery(async ($) => {
       $.getJSON('https://ipapi.co/json/', (data) => {
         if (!data) {
-          errorScreen();
+          err = true;
         } 
         resolve(data);
       });
@@ -141,17 +144,17 @@ async function getCustomCityData(city) {
     body: JSON.stringify({ city })
   });
   const res = await response.json();
+  console.log(res.status)
   if (res.status == 404) {
-    errorScreen();
+    err = true;
   } else {
     return new Date(res.date + " " + to24hrTime(res.time)).getTime();
   }
   
 }
 async function init(city) { 
-  // alert(document.body.clientWidth);
-  document.querySelector(".page").style.display = "none";
-  $("section.loading, h1.loading, h2.loading").fadeIn(0);
+  toggleLoadingScreen();
+  err = false;
   if (city != null && city == myCity) {
     city = null;
   } 
@@ -175,41 +178,44 @@ async function init(city) {
     times = await getTimes(location, false);
     customCity = true;
   }
-  if (myCity == null) {
-    myCity = location.toLowerCase();
-  }
-  displayAllPrayerTimes(times);
-  times = [times[0], times[3]];
-  location = location.substr(0, 1).toUpperCase() + location.substring(1);
-  cityDisplay.textContent = location;
-  times.forEach((time) => {
-    rawPrayerTimes.push(time);
-    prayerTimes.push(getPrayerDate(time));
-  });
-  msToFajr = now - prayerTimes[0];
-  if (city == null) {
-    fetch('/client', {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify({ location })
-    });
-  }
-  setNextPrayer(true);
-  $("section.loading, h1.loading, h2.loading").fadeOut(500);
-  setTimeout(() => (document.querySelector(".page").style.display = "initial"), 700);
-  update();
-  let TID = setInterval(() => {
-    if (locationChanged) {
-      clearInterval( TID );
-      locationChanged = false;
-      init(locationInput.value.toLowerCase());
-    } else {
-      update();
+  if (!err) {
+    if (myCity == null) {
+      myCity = location.toLowerCase();
     }
-  }, 1000); 
-  
+    displayAllPrayerTimes(times);
+    times = [times[0], times[3]];
+    location = location.substr(0, 1).toUpperCase() + location.substring(1);
+    cityDisplay.textContent = location;
+    times.forEach((time) => {
+      rawPrayerTimes.push(time);
+      prayerTimes.push(getPrayerDate(time));
+    });
+    msToFajr = now - prayerTimes[0];
+    if (city == null) {
+      fetch('/client', {
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify({ location })
+      });
+    }
+    setNextPrayer(true);
+    toggleLoadingScreen();
+    countdown.classList.remove("err-display");
+    update();
+    let TID = setInterval(() => {
+      if (locationChanged) {
+        clearInterval( TID );
+        locationChanged = false;
+        init(locationInput.value.toLowerCase());
+      } else {
+        update();
+      }
+    }, 1000); 
+  } else {
+    errorScreen();
+  }
 }
 function getPrayerDate(time) {
   let string = time;
@@ -297,7 +303,7 @@ function setNextPrayer(first) {
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
   });
-  prayerTimeDisplay.textContent = to12hrDisplayTime(rawPrayerTimes[nextPrayerIndex]);
+  prayerTimeDisplay.textContent = to12hrDisplayTime(rawPrayerTimes[nextPrayerIndex]).toUpperCase();
   
 }
 function format(string) {
@@ -334,10 +340,7 @@ function changeLocation() {
     $('#change-location').detach().appendTo(locationForm);
     changeLocationButton.textContent = "go";
   } else {
-    if (locationInput.value.length != 0) {
-      $("#button-seperator").remove();
-      $('#info').append('<br id="button-seperator">');
-      $('#change-location').detach().appendTo($('#info'));
+    if (locationInput.value.length != 0) {      $('#change-location').detach().insertBefore($('.location-form'));
       locationForm.style.display = "none";
       changeLocationButton.textContent = "Change Location";
       locationChanged = true;
@@ -412,12 +415,14 @@ function adaptUI() {
     adhanResizedDown = true;
     adhanResizedUp = false;
     $('#adhan-options').detach().appendTo($('#mobile-options-wrapper'));
-    document.getElementById("adhan-options").classList.add("resized");
+    adhanOptions.classList.add("resized");
+    adhanOptions.classList.remove("hover-response");
   } else if (document.body.clientWidth > 790 && !adhanResizedUp) {
     adhanResizedDown = false;
     adhanResizedUp = true;
     $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
-    document.getElementById("adhan-options").classList.remove("resized");
+    adhanOptions.classList.remove("resized");
+    adhanOptions.classList.add("hover-response");
   }
   if (document.body.clientWidth < 1100 && !prayerResizedDown) {
     prayerResizedDown = true;
@@ -432,6 +437,20 @@ function adaptUI() {
   }
   
 }
+function toggleLoadingScreen() {
+  if (!loaded) {
+    document.querySelector(".page").style.display = "none";
+    $("section.loading, h1.loading, h2.loading").fadeIn(0);
+  } else {
+    $("section.loading, h1.loading, h2.loading").fadeOut(500);
+    setTimeout(() => (document.querySelector(".page").style.display = "initial"), 700);
+  }
+  loaded = !loaded;
+}
 function errorScreen() {
-  countdown.innerHTML = "Unable to get data for your location.";
+  console.log(err);
+  toggleLoadingScreen();
+  currentTime.textContent = "--";
+  countdown.classList.add("err-display");
+  countdown.innerHTML = "Unable to get complete data for your location.";
 }

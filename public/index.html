@@ -20,19 +20,20 @@
     <div class="subtitles">
       <label for="current-time">Your Time: </label><span class="bold" id="current-time"></span>
     </div>
-    <p id="next-prayer-wrapper" style="margin-top: 0">Time To <span class="next-prayer subtitles"></span>:</p>  
+    <p id="next-prayer-wrapper" class="subtitles" style="margin-top: 0">Time To <span class="next-prayer subtitles"></span>:</p>  
     <div class="content">
       <h1 id="countdown" class="time-remaining"></h1>
       <p id="info" class="subtitles">
         <span class="next-prayer"></span> Time: <span class="bold" id="prayer-time"></span> | <span id="location"></span>
         <div class="resizable" id="all-prayer-times"></div> 
-        <br>
-        <div class="location-form">
-          <label for="city">City: </label>
-          <input class="user-input subtitles" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
-        </div>
-        <button class="user-input hover-response " id="change-location" onclick="changeLocation()">Change Location</button>
       </p>
+      <div class="location-form">
+        <label for="city" class="subtitles">City: </label>
+        <input class="user-input subtitles" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
+      </div>
+      <button class="user-input hover-response " id="change-location" onclick="changeLocation()">Change Location</button>
+      <br id="button-seperator">
+      <br>
       <section id="mobile-options-wrapper"></section>
     </div>
     <div id="adhan-options" class="hover-response options resized resizable">

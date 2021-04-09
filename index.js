@@ -3,7 +3,6 @@ const app = express();
 const port = process.env.PORT || 8080;
 const citiesOfClients = [];
 const cityTimezones = require('city-timezones');
-const fetch = require('node-fetch');
 const ezlocalTime = require('ez-local-time');
 
 app.use(express.static(__dirname + '/public'));
@@ -20,15 +19,18 @@ app.post('/client', (request) => {
 app.post('/customCity', async (request, response) => {
     const info = request.body;
     const city = info.city;
-    const cityLookup = cityTimezones.lookupViaCity(city);
-    if (cityLookup.length != 0) {
-        const dateObject = ezlocalTime(cityLookup[0].timezone);
+    try {
+        const cityLookup = cityTimezones.lookupViaCity(city);
+        if (cityLookup.length == 0) {
+            throw("err")
+        }
+        const dateObject = ezlocalTime("b");
         response.json({
             status: 200,
             date: dateObject.date,
             time: dateObject.time.substring(1)
         });
-    } else {
+    } catch (err) {
         response.json({
             status: 404
         });
