@@ -22,7 +22,6 @@ app.post('/customCity', async (request, response) => {
     try {
         const cityLookup = cityTimezones.lookupViaCity(city);
         if (cityLookup.length == 0) {
-            console.log("a")
             throw("err")
         }
         const dateObject = ezlocalTime(cityLookup[0].timezone);
@@ -32,7 +31,6 @@ app.post('/customCity', async (request, response) => {
             time: dateObject.time.substring(1)
         });
     } catch (err) {
-        console.log(err)
         response.json({
             status: 404
         });

@@ -337,7 +337,6 @@ function changeLocation() {
   if (changingLocation) {
     locationForm.style.display = "block";
     $('#change-location').detach().appendTo(locationForm);
-    alert(document.body.clientWidth);
     changeLocationButton.textContent = "go";
   } else {
     if (locationInput.value.length != 0) {      $('#change-location').detach().insertBefore($('.location-form'));
