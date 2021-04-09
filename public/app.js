@@ -144,7 +144,6 @@ async function getCustomCityData(city) {
     body: JSON.stringify({ city })
   });
   const res = await response.json();
-  console.log(res.status)
   if (res.status == 404) {
     err = true;
   } else {
@@ -448,7 +447,6 @@ function toggleLoadingScreen() {
   loaded = !loaded;
 }
 function errorScreen() {
-  console.log(err);
   toggleLoadingScreen();
   currentTime.textContent = "--";
   countdown.classList.add("err-display");
