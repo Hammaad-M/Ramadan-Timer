@@ -23,7 +23,7 @@ let err = false;
 let loaded = false;
 const adhan = new Audio();
 const duas = ["", "iftar-dua.png"];
-const prayers = ["Fajr/Sunrise", "Maghrib/Sunset"];
+const prayers = ["Fajr", "Maghrib/Sunset"];
 const countdown = document.getElementById("countdown");
 const nextPrayerDisplays = document.querySelectorAll(".next-prayer");
 const prayerTimeDisplay = document.getElementById("prayer-time");
@@ -57,7 +57,7 @@ async function getTimes(data, useIP) {
               response.results.Isha
             );
             times.forEach((t, i) => {
-              times[i] = t.replaceAll("%", "");
+              times[i] = t.replace("%", "").replace("%", "");
             });
             let city = response.settings.location.city;
             resolve({ times, city});
@@ -170,17 +170,19 @@ async function init(city) {
     let data = await getTimes(location.ip, true);
     location = data.city;
     times = data.times;
+    now = new Date();
   } else {
     location = city;
     unix = await getCustomCityData(city);
     if (unix > 1) {
+      console.log("updating unix")
       now = new Date(unix);
       times = await getTimes(location, false);
     }
     customCity = true;
   }
   if (!err) {
-    allPrayerTimes.style.display = "initial";
+    allPrayerTimes.style.display = "block";
     if (myCity == null) {
       myCity = location.toLowerCase();
     }
@@ -193,7 +195,7 @@ async function init(city) {
       prayerTimes.push(getPrayerDate(time));
     });
     msToFajr = now - prayerTimes[0];
-    if (city == null) {
+    if (city == null && first) {
       fetch('/client', {
         method: 'POST',
         headers: {
@@ -209,7 +211,7 @@ async function init(city) {
     let TID = setInterval(() => {
       if (locationChanged) {
         clearInterval( TID );
-        locationChanged = false;
+        locationChanged = false;   
         init(locationInput.value.toLowerCase());
       } else {
         update();
@@ -257,16 +259,14 @@ function to24hrTime(time) {
     return string.substring(0, string.length-3);
   }
 }
-function charCount(str, letter) 
-{
- let letter_Count = 0;
- for (let i = 0; i < str.length; i++) 
- {
+function charCount(str, letter) {
+  let letterCount = 0;
+  for (let i = 0; i < str.length; i++) {
     if (str.charAt(i) == letter) {
-      letter_Count += 1;
+      letterCount += 1;
     }
   }
-  return letter_Count;
+  return letterCount;
 }
 function msToTime(ms) {
   ms = Math.abs(ms);
