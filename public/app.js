@@ -63,7 +63,7 @@ async function getTimes(data, useIP) {
       })
     } else {
       await jQuery(async ($) => {
-        $.getJSON('http://api.aladhan.com/v1/timings/1398332113?latitude=' + data.lat + '&longitude=' + data.lon, (response) => {
+        $.getJSON('https://api.aladhan.com/v1/timings/1398332113?latitude=' + data.lat + '&longitude=' + data.lon, (response) => {
           if (response.status != "OK") {
             err = true;
           } else {
