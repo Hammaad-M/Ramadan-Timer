@@ -149,7 +149,7 @@ async function getCustomCityTime(timezone) {
   if (res.status == 404) {
     err = true;
   } else {
-    return new Date(res.date + " " + to24hrTime(res.time)).getTime();
+    return new Date(res.dateTime).getTime();
   }
   
 }

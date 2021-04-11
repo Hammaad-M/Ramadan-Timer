@@ -20,13 +20,11 @@ app.get('/customCityTime', async (req, res) => {
     const dateObject = ezlocalTime(req.get("timezone"));
     res.json({
         status: 200,
-        date: dateObject.date,
-        time: dateObject.time.substring(1)
+        dateTime: dateObject.dateTime
     });
 });
 app.get('/searchForCity', (req, res) => {
     const cityLookup = cityTimezones.lookupViaCity(req.get("city"));
-    // const cityLookup = cityTimezones.lookupViaCity("london");
     if (cityLookup.length == 0) {
         res.json({
             status: 404
