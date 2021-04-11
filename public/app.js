@@ -17,14 +17,8 @@ let rawPrayerTimes = [];
 let now = new Date();
 let nextPrayer;
 let nextPrayerIndex;
-let changingLocation = false;
-let locationChanged = false;
-let newLocation = null;
 let customCity = false;
-let customCountryCode;
-let citySupported;
 let unix;
-let first = 0;
 let pauseCounter = 16;
 let playAdhan = false;
 let fullAdhan = false;
@@ -71,10 +65,8 @@ async function getTimes(data, useIP) {
       await jQuery(async ($) => {
         $.getJSON('http://api.aladhan.com/v1/timings/1398332113?latitude=' + data.lat + '&longitude=' + data.lon, (response) => {
           if (response.status != "OK") {
-            citySupported = false;
             err = true;
           } else {
-            citySupported = true;
             const timings = response.data.timings;
             times.push(
               timings.Fajr, 
@@ -391,7 +383,6 @@ function resetChangeLocation() {
   $('#change-location').detach().insertBefore($('.location-form'));
   locationForm.style.display = "none";
   changeLocationButton.textContent = "Change Location";
-  locationChanged = true;
   changeLocationButton.onclick = changeLocation;
 }
 function displayAllPrayerTimes(times) {
