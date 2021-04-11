@@ -355,27 +355,34 @@ async function searchForLocation() {
             name: "${location.name}", lat: ${location.lat}, lon: ${location.lon}, timezone: "${location.timezone}", city: "${location.city}"
           })' class="drop-down-buttons subtitles">${location.name}</button>`
         );
-        $(document).on('mouseenter','#' + i, () => {
-          $('#' + i).css({
-            "background-color":bgColor,
-            "color": "white"
-          });
-        }).on('mouseleave','#' + i,  () => {
-          $('#' + i).css({
-            "background-color":"white",
-            "color":"black"
-          });
-        });
+        addHoverEffect(i)
       });
     } else {
       $('#options-wrapper').css({"background-color":"white", "color":"black"});
       $('#options-wrapper').append(
-        `<p class="subtitles">No Matches Found</p>`
+        `<p class="subtitles">No Match Found</p>`
       );
     }
+    $('#options-wrapper').append(
+      `<button id="find-me" onclick='init(null)' style="text-decoration: underline" class="drop-down-buttons subtitles">Find Me</button>`
+    );
+    addHoverEffect("find-me")
     $('.dropdown').show();
     $('#options-wrapper').show();
   }
+}
+function addHoverEffect(i) {
+  $(document).on('mouseenter','#' + i, () => {
+    $('#' + i).css({
+      "background-color":bgColor,
+      "color": "white"
+    });
+  }).on('mouseleave','#' + i,  () => {
+    $('#' + i).css({
+      "background-color":"white",
+      "color":"black"
+    });
+  });
 }
 function resetChangeLocation() {
   $('.dropdown').hide();
