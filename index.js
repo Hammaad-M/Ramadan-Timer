@@ -16,23 +16,42 @@ app.post('/client', (request) => {
         console.log(citiesOfClients);
     }
 });
-app.post('/customCity', async (request, response) => {
-    const info = request.body;
-    const city = info.city;
-    try {
-        const cityLookup = cityTimezones.lookupViaCity(city);
-        if (cityLookup.length == 0) {
-            throw("err")
-        }
-        const dateObject = ezlocalTime(cityLookup[0].timezone);
-        response.json({
-            status: 200,
-            date: dateObject.date,
-            time: dateObject.time.substring(1)
-        });
-    } catch (err) {
-        response.json({
+app.get('/customCityTime', async (req, res) => {
+    const dateObject = ezlocalTime(req.get("timezone"));
+    res.json({
+        status: 200,
+        date: dateObject.date,
+        time: dateObject.time.substring(1)
+    });
+});
+app.get('/searchForCity', (req, res) => {
+    const cityLookup = cityTimezones.lookupViaCity(req.get("city"));
+    // const cityLookup = cityTimezones.lookupViaCity("london");
+    if (cityLookup.length == 0) {
+        res.json({
             status: 404
         });
-    }
+    } else {
+        let data = [];
+        cityLookup.forEach((location) => {
+            let name = location.city;
+            if (location.state_ansi != undefined) {
+                name = name + " (" + location.state_ansi + ") ";
+            } else {
+                name = name + ", ";
+            }
+            name = name + location.country;
+            data.push({
+                name: name, 
+                city: location.city,
+                lat: location.lat, 
+                lon: location.lng, 
+                timezone: location.timezone
+            });
+        });
+        res.json({
+            status: 200,
+            data: data
+        });
+    } 
 });

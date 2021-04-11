@@ -29,8 +29,8 @@ a {
     max-width: 35em;
     float: center;
 }
-.content button {
-    padding: 10px;
+#change-location {
+    padding: 7px;
     background-color: var(--sub-background);
     color: white;
     border: 1px solid white;
@@ -47,6 +47,43 @@ a {
     border: 2px solid black;
     font-family: 'Kanit', sans-serif;
 }
+.dropdown {
+    margin: 0;
+    z-index: 2;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    left: 0;
+    padding: 0 18px;
+    border-radius: 2px;
+}
+#options-wrapper {
+    max-height: 16.5em;
+    overflow-y: scroll;
+    background-color: transparent;
+    padding: 0;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 15.5em;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.drop-down-buttons {
+    margin: 0;
+    padding: 10px;
+    border: none;
+    background-color: white;
+    color: black;
+    width: 100%;
+    transition: 0.2;
+    border-radius: 1px;
+    font-family: 'Kanit',sans-serif;
+    font-size: 16px;
+}
+.drop-down-buttons:hover {
+    border: 2px solid white !important;
+}
 .hover-response {
     transition: 0.3s;
 }
@@ -58,8 +95,10 @@ a {
     padding: 8px !important;
 }
 #countdown {
+    font-family: sans-serif;
     font-size: 100px;
-    letter-spacing: 10px;
+    font-weight: 900;
+    letter-spacing: 5px;
     text-shadow: 0 0 10px black;
     padding: 0;
     margin-bottom: 0.4em;
@@ -87,7 +126,7 @@ a {
         text-shadow: 0 0 5px black;
         margin-bottom: 10px;
     }
-    .content button {
+    #change-location {
         font-size: 14px;
     }
     .subtitles {
@@ -128,7 +167,7 @@ a {
 }
 @media only screen and (max-width: 750px) and (min-width: 501px) {
     #countdown {
-        font-size: 115px;
+        font-size: 90px;
     }
     .user-input {
         font-size: 16px;

@@ -1,3 +1,17 @@
+const adhan = new Audio();
+const duas = ["", "iftar-dua.png"];
+const prayers = ["Fajr", "Maghrib/Sunset"];
+const countdown = document.getElementById("countdown");
+const nextPrayerDisplays = document.querySelectorAll(".next-prayer");
+const prayerTimeDisplay = document.getElementById("prayer-time");
+const cityDisplay = document.getElementById("location");
+const locationForm = document.querySelector(".location-form");
+const changeLocationButton = document.getElementById("change-location");
+const locationInput = document.getElementById("city-input");
+const currentTime = document.getElementById("current-time");
+const allPrayerTimes = document.getElementById("all-prayer-times");
+const adhanOptions = document.getElementById("adhan-options");
+document.getElementById("adhan-off").checked = true;
 let prayerTimes = [];
 let rawPrayerTimes = [];
 let now = new Date();
@@ -5,6 +19,7 @@ let nextPrayer;
 let nextPrayerIndex;
 let changingLocation = false;
 let locationChanged = false;
+let newLocation = null;
 let customCity = false;
 let customCountryCode;
 let citySupported;
@@ -21,20 +36,8 @@ let myCity = null;
 let alertEffect = false;
 let err = false;
 let loaded = false;
-const adhan = new Audio();
-const duas = ["", "iftar-dua.png"];
-const prayers = ["Fajr", "Maghrib/Sunset"];
-const countdown = document.getElementById("countdown");
-const nextPrayerDisplays = document.querySelectorAll(".next-prayer");
-const prayerTimeDisplay = document.getElementById("prayer-time");
-const cityDisplay = document.getElementById("location");
-const locationForm = document.querySelector(".location-form");
-const changeLocationButton = document.getElementById("change-location");
-const locationInput = document.getElementById("city-input");
-const currentTime = document.getElementById("current-time");
-const allPrayerTimes = document.getElementById("all-prayer-times");
-const adhanOptions = document.getElementById("adhan-options");
-document.getElementById("adhan-off").checked = true;
+let TID;
+let bgColor;
 
 async function getTimes(data, useIP) {
   if (!('fetch' in window)) {
@@ -66,11 +69,10 @@ async function getTimes(data, useIP) {
       })
     } else {
       await jQuery(async ($) => {
-        $.getJSON('https://api.aladhan.com/v1/timingsByCity?city=' + data + '&country=' + customCountryCode, (response) => {
+        $.getJSON('http://api.aladhan.com/v1/timings/1398332113?latitude=' + data.lat + '&longitude=' + data.lon, (response) => {
           if (response.status != "OK") {
             citySupported = false;
-            alert("Unable to get prayer times for your city...try using a local major city instead.")
-            window.location.reload();
+            err = true;
           } else {
             citySupported = true;
             const timings = response.data.timings;
@@ -135,13 +137,13 @@ function update() {
 function updateCountdown(remaining) {
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
 }
-async function getCustomCityData(city) {
-  const response = await fetch('/customCity', {
-    method: 'POST',
+async function getCustomCityTime(timezone) {
+  const response = await fetch('/customCityTime', {
+    method: 'GET',
     headers: {
-      'Content-Type':'application/json'
-    }, 
-    body: JSON.stringify({ city })
+      'Content-Type':'application/json',
+      'timezone':timezone
+    }
   });
   const res = await response.json();
   if (res.status == 404) {
@@ -151,8 +153,10 @@ async function getCustomCityData(city) {
   }
   
 }
-async function init(city) { 
+async function init(city) {
+  clearInterval( TID ); 
   toggleLoadingScreen();
+  $('.dropdown').hide();
   err = false;
   if (city != null && city == myCity) {
     city = null;
@@ -172,15 +176,15 @@ async function init(city) {
     times = data.times;
     now = new Date();
   } else {
-    location = city;
-    unix = await getCustomCityData(city);
+    location = city.city;
+    unix = await getCustomCityTime(city.timezone);
+    times = await getTimes({lat: city.lat, lon: city.lon}, false);
     if (unix > 1) {
-      console.log("updating unix")
       now = new Date(unix);
-      times = await getTimes(location, false);
     }
     customCity = true;
   }
+  resetChangeLocation();
   if (!err) {
     allPrayerTimes.style.display = "block";
     if (myCity == null) {
@@ -195,7 +199,7 @@ async function init(city) {
       prayerTimes.push(getPrayerDate(time));
     });
     msToFajr = now - prayerTimes[0];
-    if (city == null && first) {
+    if (city == null) {
       fetch('/client', {
         method: 'POST',
         headers: {
@@ -208,25 +212,14 @@ async function init(city) {
     toggleLoadingScreen();
     countdown.classList.remove("err-display");
     update();
-    let TID = setInterval(() => {
-      if (locationChanged) {
-        clearInterval( TID );
-        locationChanged = false;   
-        init(locationInput.value.toLowerCase());
-      } else {
-        update();
-      }
+    TID = setInterval(() => {
+      update()
     }, 1000); 
   } else {
     allPrayerTimes.style.display = "none";
     errorScreen();
-    let TID = setInterval(() => {
+    TID = setInterval(() => {
       adaptUI();
-      if (locationChanged) {
-        clearInterval( TID );
-        locationChanged = false;
-        init(locationInput.value.toLowerCase());
-      }
     }, 500); 
   }
 }
@@ -305,11 +298,11 @@ function setNextPrayer(first) {
     nextPrayerIndex = index;
   }
   if (nextPrayerIndex == 0) {
-    document.body.style.backgroundColor = "rgba(40, 73, 10, 0.925)";
+    bgColor = "rgba(40, 73, 10, 0.925)";
   } else {
-    document.body.style.backgroundColor = "rgba(109, 30, 30, 0.959)";
+    bgColor = "rgba(109, 30, 30, 0.959)";
   }
-  
+  document.body.style.backgroundColor = bgColor;
   let nextPrayer = prayers[nextPrayerIndex];
   nextPrayerDisplays.forEach((display) => {
     display.textContent = nextPrayer;
@@ -345,26 +338,68 @@ function to12hrDisplayTime(string) {
   }
 }
 function changeLocation() {
-  changingLocation = !changingLocation;
-  if (changingLocation) {
-    locationForm.style.display = "block";
-    $('#change-location').detach().appendTo(locationForm);
-    changeLocationButton.textContent = "go";
-  } else {
-    if (locationInput.value.length != 0) {      
-      $('#change-location').detach().insertBefore($('.location-form'));
-      locationForm.style.display = "none";
-      changeLocationButton.textContent = "Change Location";
-      locationChanged = true;
+  locationForm.style.display = "block";
+  $('#change-location').detach().appendTo(locationForm);
+  $('#choose-location').detach().appendTo(locationForm);
+  changeLocationButton.textContent = "search";
+  changeLocationButton.onclick = searchForLocation;
+}
+async function searchForLocation() {
+  const city = locationInput.value;
+  if (city.length > 0) {
+    $('#options-wrapper').empty();
+    let response = await fetch('/searchForCity', {
+      method: 'GET',
+      headers: {
+        'Content-Type':'application/json',
+        'City':city
+      }, 
+    });
+    response = await response.json();
+    if (response.status === 200) {
+      response.data.forEach((location, i) => {
+        $('#options-wrapper').append(
+          `<button id="${i}" onclick='init({
+            name: "${location.name}", lat: ${location.lat}, lon: ${location.lon}, timezone: "${location.timezone}", city: "${location.city}"
+          })' class="drop-down-buttons subtitles">${location.name}</button>`
+        );
+        $(document).on('mouseenter','#' + i, () => {
+          $('#' + i).css({
+            "background-color":bgColor,
+            "color": "white"
+          });
+        }).on('mouseleave','#' + i,  () => {
+          $('#' + i).css({
+            "background-color":"white",
+            "color":"black"
+          });
+        });
+      });
+    } else {
+      $('#options-wrapper').css({"background-color":"white", "color":"black"});
+      $('#options-wrapper').append(
+        `<p class="subtitles">No Matches Found</p>`
+      );
     }
+    $('.dropdown').show();
+    $('#options-wrapper').show();
   }
+}
+function resetChangeLocation() {
+  $('.dropdown').hide();
+  $('#options-wrapper').hide();
+  $('#change-location').detach().insertBefore($('.location-form'));
+  locationForm.style.display = "none";
+  changeLocationButton.textContent = "Change Location";
+  locationChanged = true;
+  changeLocationButton.onclick = changeLocation;
 }
 function displayAllPrayerTimes(times) {
   let prayerList = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
   document.getElementById("all-prayer-times").innerHTML = "";
   times.forEach((time, i) => {
     $('#all-prayer-times').append(
-      `<div><p class='hover-response subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${to12hrDisplayTime(time)}</span></p></div>`
+      `<div><p class='subtitles'>${prayerList[i]}: &#8287&#8287&#8287 <span>${to12hrDisplayTime(time)}</span></p></div>`
     );
   });
 }
@@ -465,3 +500,11 @@ function errorScreen() {
   countdown.classList.add("err-display");
   countdown.innerHTML = "Unable to get data for your location. <br> You should consider moving...";
 }
+$(document).mouseup((e) => {
+    const container = $(".dropdown");
+    // if the target of the click isn't the container nor a descendant of the container
+    if (!container.is(e.target) && container.has(e.target).length === 0) 
+    {
+      container.hide();
+    }
+});
