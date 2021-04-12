@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap');
+
 body {
     padding: 10px;
     margin: 0;;
@@ -95,10 +96,11 @@ a {
     padding: 8px !important;
 }
 #countdown {
-    font-family: sans-serif;
-    font-size: 100px;
+    font-family: 'Tahoma', sans-serif;
+    font-variant-numeric: tabular-nums;
+    font-size: 95px;
     font-weight: 900;
-    letter-spacing: 5px;
+    letter-spacing: 1px;
     text-shadow: 0 0 10px black;
     padding: 0;
     margin-bottom: 0.4em;
