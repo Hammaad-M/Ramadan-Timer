@@ -18,7 +18,6 @@ app.post('/client', (request) => {
 });
 app.get('/customCityTime', async (req, res) => {
     const dateObject = ezlocalTime(req.get("timezone"));
-    console.log(dateObject);
     res.json({
         status: 200,
         dateTime: dateObject.date + dateObject.time

@@ -96,7 +96,7 @@ a {
     padding: 8px !important;
 }
 #countdown {
-    font-family: 'Tahoma', sans-serif;
+    font-family: sans-serif;
     font-variant-numeric: tabular-nums;
     font-size: 95px;
     font-weight: 900;

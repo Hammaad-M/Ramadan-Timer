@@ -48,16 +48,7 @@ async function getTimes(data, useIP) {
           if (response.success == false || !response) {
             err = true;
           } else {
-            times.push(
-              response.results.Fajr, 
-              response.results.Dhuhr, 
-              response.results.Asr, 
-              response.results.Maghrib, 
-              response.results.Isha
-            );
-            times.forEach((t, i) => {
-              times[i] = t.replace("%", "").replace("%", "");
-            });
+            times = timesToArray(response);
             let city = response.settings.location.city;
             resolve({ times, city});
           }
@@ -65,24 +56,31 @@ async function getTimes(data, useIP) {
       })
     } else {
       await jQuery(async ($) => {
-        $.getJSON('https://api.aladhan.com/v1/timings/1398332113?latitude=' + data.lat + '&longitude=' + data.lon, (response) => {
-          if (response.status != "OK") {
+        $.getJSON('https://www.islamicfinder.us/index.php/api/prayer_times?latitude=' + data.lat + '&longitude=' + data.lon + '&timezone=' + data.timezone, (response) => {
+          if (!response.success) {
             err = true;
           } else {
-            const timings = response.data.timings;
-            times.push(
-              timings.Fajr, 
-              timings.Dhuhr,
-              timings.Asr, 
-              timings.Maghrib, 
-              timings.Isha
-            );
+            times = timesToArray(response);
             resolve(times);
           }
         });
       });
     }
   });
+}
+function timesToArray(response) {
+  let times = [];
+  times.push(
+    response.results.Fajr, 
+    response.results.Dhuhr, 
+    response.results.Asr, 
+    response.results.Maghrib, 
+    response.results.Isha
+  );
+  times.forEach((t, i) => {
+    times[i] = t.replace("%", "").replace("%", "");
+  });
+  return times;
 }
 async function getLocation() {
   return new Promise(async (resolve) => {
@@ -177,7 +175,7 @@ async function init(city) {
   } else {
     location = city.city;
     unix = await getCustomCityTime(city.timezone);
-    times = await getTimes({lat: city.lat, lon: city.lon}, false);
+    times = await getTimes({lat: city.lat, lon: city.lon, timezone: city.timezone}, false);
     if (unix > 1) {
       now = new Date(unix);
     }
@@ -195,7 +193,11 @@ async function init(city) {
     cityDisplay.textContent = location;
     times.forEach((time) => {
       rawPrayerTimes.push(time);
-      prayerTimes.push(getPrayerDate(time));
+      let temp = time;
+      if (customCity) {
+        temp = to24hrTime(time);
+      }
+      prayerTimes.push(getPrayerDate(temp));
     });
     msToFajr = now - prayerTimes[0];
     if (city == null) {
@@ -463,32 +465,51 @@ function eraseAlertEffects() {
   countdown.style.color = "white";
 }
 function adaptUI() {
+  if (document.body.clientWidth < 1000 && !prayerResizedDown) {
+    prayerResizedDown = true;
+    prayerResizedUp = false;
+    $('#all-prayer-times').detach().appendTo($('#mobile-options-wrapper'));
+    allPrayerTimes.classList.add("resized");
+    flexPrayerTimes(true);
+  } else if (document.body.clientWidth >= 1000 && !prayerResizedUp) {
+    prayerResizedDown = false;
+    prayerResizedUp = true;
+    $('#all-prayer-times').detach().insertBefore($('.location-form'));
+    allPrayerTimes.classList.remove("resized");
+    flexPrayerTimes(false);
+  }
   if (document.body.clientWidth < 790 && !adhanResizedDown) {
     adhanResizedDown = true;
     adhanResizedUp = false;
     $('#adhan-options').detach().appendTo($('#mobile-options-wrapper'));
     adhanOptions.classList.add("resized");
     adhanOptions.classList.remove("hover-response");
+    flexPrayerTimes(false);
   } else if (document.body.clientWidth >= 790 && !adhanResizedUp) {
+    if (adhanResizedDown) {
+      flexPrayerTimes(true)
+    }
     adhanResizedDown = false;
     adhanResizedUp = true;
     $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
     adhanOptions.classList.remove("resized");
     adhanOptions.classList.add("hover-response");
+    
   }
-  if (document.body.clientWidth < 1000 && !prayerResizedDown) {
-    prayerResizedDown = true;
-    prayerResizedUp = false;
-    $('#all-prayer-times').detach().appendTo($('#mobile-options-wrapper'));
-    allPrayerTimes.classList.add("resized");
-  } else if (document.body.clientWidth >= 1000 && !prayerResizedUp) {
-    prayerResizedDown = false;
-    prayerResizedUp = true;
-    $('#all-prayer-times').detach().insertBefore($('.location-form'));
-    allPrayerTimes.classList.remove("resized");
-  } 
-  
-  
+}
+function flexPrayerTimes(flex) {
+  if (flex) {
+    $('#all-prayer-times').css({
+      "display":"flex",
+      "flex-direction":"row"
+    });
+    $('#all-prayer-times').children().css("margin-right", "5px");
+  } else {
+    $('#all-prayer-times').css({
+      "display":"block",
+    });
+    $('#all-prayer-times').children().css("margin-right", "0");
+  }
 }
 function toggleLoadingScreen() {
   if (!loaded) {
