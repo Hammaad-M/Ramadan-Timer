@@ -486,7 +486,7 @@ function adaptUI() {
     adhanOptions.classList.remove("hover-response");
     flexPrayerTimes(false);
   } else if (document.body.clientWidth >= 790 && !adhanResizedUp) {
-    if (adhanResizedDown) {
+    if (adhanResizedDown && document.body.clientWidth < 1000) {
       flexPrayerTimes(true)
     }
     adhanResizedDown = false;
@@ -494,8 +494,8 @@ function adaptUI() {
     $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
     adhanOptions.classList.remove("resized");
     adhanOptions.classList.add("hover-response");
-    
   }
+  
 }
 function flexPrayerTimes(flex) {
   if (flex) {
