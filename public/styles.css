@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@700&display=swap');
 
 body {
     padding: 10px;
@@ -96,7 +97,7 @@ a {
     padding: 8px !important;
 }
 #countdown {
-    font-family: sans-serif;
+    font-family: sans-serif, monospace;
     font-variant-numeric: tabular-nums;
     font-size: 95px;
     font-weight: bolder;
@@ -121,12 +122,16 @@ a {
     margin: 0 auto;
     margin-top: 8em;
 }
-
+#current-time {
+    font-variant-numeric: tabular-nums;
+    font-family: 'Ubuntu Mono', sans-serif;
+}
 @media only screen and (max-width: 500px) {
     #countdown {
-        font-size: 90px ;
-        text-shadow: 0 0 5px black;
+        font-size: 86px;
         margin-bottom: 10px;
+        font-family: 'Ubuntu Mono', sans-serif;
+        letter-spacing: -3px;
     }
     #change-location {
         font-size: 14px;
@@ -147,7 +152,7 @@ a {
 }
 @media only screen and (max-width: 400px) {
     #countdown {
-        font-size: 83px;
+        font-size: 78px;
         margin-bottom: 10px;
     }
     .bold {
@@ -170,6 +175,8 @@ a {
 @media only screen and (max-width: 750px) and (min-width: 501px) {
     #countdown {
         font-size: 120px;
+        font-family: 'Ubuntu Mono', sans-serif;
+        letter-spacing: -3px;
     }
     .user-input {
         font-size: 16px;

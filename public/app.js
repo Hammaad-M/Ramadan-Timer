@@ -34,7 +34,8 @@ let TID;
 let bgColor;
 let lastMinutes;
 let lastSeconds;
-
+let backup;
+let lostFocus = false;
 async function getTimes(data, useIP) {
   if (!('fetch' in window)) {
     alert("Fetch API disabled or not found...unable to get prayer times.");
@@ -100,6 +101,12 @@ function update() {
   } else {
     unix += 1000;
     now = new Date(unix);
+    if (!document.hasFocus()) {
+      lostFocus = true;
+    } else if (document.hasFocus() && lostFocus) {
+      init(backup);
+      lostFocus = false;
+    }
   } 
   currentTime.textContent = to12hrTime(now);
   if (pauseCounter > 14) {
@@ -173,6 +180,7 @@ async function init(city) {
     times = data.times;
     now = new Date();
   } else {
+    backup = city;
     location = city.city;
     unix = await getCustomCityTime(city.timezone);
     times = await getTimes({lat: city.lat, lon: city.lon, timezone: city.timezone}, false);
