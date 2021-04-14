@@ -184,7 +184,8 @@ async function init(city) {
       times = data.times;
     } catch (err) {
       alert("Unable to resolve your location...try entering it manually");
-      data = await getTimes(backup);      times = data;
+      data = await getTimes(backup);      
+      times = data;
       location = "Seattle";
     } 
     if (myCity === null) {
@@ -468,7 +469,7 @@ async function endCountdown() {
       console.log(err);
     }
   }
-
+  eraseAlertEffects(0);
 }
 function createAlertEffects(s) {
   if (s % 2 == 0) {
