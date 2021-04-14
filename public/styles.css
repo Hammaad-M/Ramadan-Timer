@@ -97,7 +97,7 @@ a {
     padding: 8px !important;
 }
 #countdown {
-    font-family: sans-serif, monospace;
+    font-family: 'Ubuntu Mono', sans-serif;
     font-variant-numeric: tabular-nums;
     font-size: 95px;
     font-weight: bolder;
@@ -175,7 +175,6 @@ a {
 @media only screen and (max-width: 750px) and (min-width: 501px) {
     #countdown {
         font-size: 120px;
-        font-family: 'Ubuntu Mono', sans-serif;
         letter-spacing: -3px;
     }
     .user-input {
@@ -183,6 +182,10 @@ a {
     }
     .subtitles {
         font-size: 16px;
+    }
+    #all-prayer-times p {
+        /* testing */
+        font-size: 14px;
     }
 }
 @media only screen and (max-width: 800px) {

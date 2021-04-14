@@ -34,8 +34,10 @@ let TID;
 let bgColor;
 let lastMinutes;
 let lastSeconds;
-let backup;
+let backup = {name: "Seattle (WA) United States of America", lat: 47.57000205, lon: -122.339985, timezone: "America/Los_Angeles", city: "Seattle"};
 let lostFocus = false;
+let first = true;
+
 async function getTimes(data, useIP) {
   if (!('fetch' in window)) {
     alert("Fetch API disabled or not found...unable to get prayer times.");
@@ -89,8 +91,9 @@ async function getLocation() {
       $.getJSON('https://ipapi.co/json/', (data) => {
         if (!data) {
           err = true;
-        } 
-        resolve(data);
+        } else {
+          resolve(data);
+        }
       });
     })
   })
@@ -101,15 +104,15 @@ function update() {
   } else {
     unix += 1000;
     now = new Date(unix);
-    if (!document.hasFocus()) {
-      lostFocus = true;
-    } else if (document.hasFocus() && lostFocus) {
-      init(backup);
-      lostFocus = false;
-    }
   } 
+  if (!document.hasFocus()) {
+    lostFocus = true;
+  } else if (document.hasFocus() && lostFocus) {
+    lostFocus = false;
+    init(backup);
+  }
   currentTime.textContent = to12hrTime(now);
-  if (pauseCounter > 14) {
+  if (pauseCounter > 14 || nextPrayerIndex === 1) {
     if (pauseCounter == 15) {
       $('#dua').remove();
     }
@@ -117,6 +120,7 @@ function update() {
     if (remaining.seconds > lastSeconds && remaining.minutes === lastMinutes) {
       setNextPrayer(false);
     }
+
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
@@ -172,12 +176,22 @@ async function init(city) {
   let times;
   let location;
   if (city == null) {
-    location = await getLocation();
+    let data;
+    try {
+      location = await getLocation();
+      data = await getTimes(location.ip, true);
+      location = data.city;
+      times = data.times;
+    } catch (err) {
+      alert("Unable to resolve your location...try entering it manually");
+      data = await getTimes(backup);      times = data;
+      location = "Seattle";
+    } 
+    if (myCity === null) {
+      myCity = location.toLowerCase();
+    }
     locationForm.style.display = "none";
     customCity = false;
-    let data = await getTimes(location.ip, true);
-    location = data.city;
-    times = data.times;
     now = new Date();
   } else {
     backup = city;
@@ -192,9 +206,6 @@ async function init(city) {
   resetChangeLocation();
   if (!err) {
     allPrayerTimes.style.display = "block";
-    if (myCity == null) {
-      myCity = location.toLowerCase();
-    }
     displayAllPrayerTimes(times);
     times = [times[0], times[3]];
     location = location.substr(0, 1).toUpperCase() + location.substring(1);
@@ -208,7 +219,7 @@ async function init(city) {
       prayerTimes.push(getPrayerDate(temp));
     });
     msToFajr = now - prayerTimes[0];
-    if (city == null) {
+    if (city == null && first) {
       fetch('/client', {
         method: 'POST',
         headers: {
@@ -216,6 +227,7 @@ async function init(city) {
         },
         body: JSON.stringify({ location })
       });
+      first = false;
     }
     setNextPrayer(true);
     toggleLoadingScreen();
@@ -434,12 +446,15 @@ function changeAdhanMode(mode) {
   }
 }
 async function endCountdown() {
-  countdown.innerHTML = "";
   pauseCounter = 0;
   if (nextPrayerIndex == 1) {
+    countdown.innerHTML = "";
     $('.content').prepend(
       "<img id='dua' src='https://azureassets.azureedge.net/media/" + duas[nextPrayerIndex] + "' alt='Iftar dua' width='100%' height='50%'>"
     );
+  } else {
+    countdown.innerHTML = "00:00:00";
+    createAlertEffects(0);
   }
   $('.options').css({
     "margin-bottom":$(".options").height() / 2
@@ -494,7 +509,8 @@ function adaptUI() {
     adhanOptions.classList.remove("hover-response");
     flexPrayerTimes(false);
   } else if (document.body.clientWidth >= 790 && !adhanResizedUp) {
-    if (adhanResizedDown && document.body.clientWidth < 1000) {
+    // in testing
+    if (adhanResizedDown && document.body.clientWidth < 1000 && document.body.clientWidth > 900) {
       flexPrayerTimes(true)
     }
     adhanResizedDown = false;
@@ -533,7 +549,7 @@ function errorScreen() {
   toggleLoadingScreen();
   currentTime.textContent = "--";
   countdown.classList.add("err-display");
-  countdown.innerHTML = "Unable to get data for your location. <br> You should consider moving...";
+  countdown.innerHTML = "We encountered an error. Please try again later.";
 }
 $(document).mouseup((e) => {
     const container = $(".dropdown");
