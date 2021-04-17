@@ -11,7 +11,7 @@
   crossorigin="anonymous"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body onload="init(null, true)">
+<body onload="init(null)">
   <section class="loading">
     <h1 class="loading">Fetching Data</h1>
     <h2 class="loading">Please Wait</h2>
@@ -34,7 +34,7 @@
       <button class="user-input hover-response" id="change-location" onclick="changeLocation()">Change Location</button>
       <div class="dropdown">
         <div id="options-wrapper">
-          <button id="find-me" onclick='init(null, true)' style="text-decoration: underline" class="drop-down-buttons subtitles">Guess my Location</button>
+          <button id="find-me" onclick='init(null)' style="text-decoration: underline" class="drop-down-buttons subtitles">Guess my Location</button>
           <button id="geolocate-me" onclick='geoLocate(false)' style="text-decoration: underline" class="drop-down-buttons subtitles">Geolocate Me</button>
         </div>
       </div>
