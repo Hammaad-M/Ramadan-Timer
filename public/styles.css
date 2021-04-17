@@ -112,7 +112,6 @@ a {
     letter-spacing: 2px !important;
 }
 .bold {
-    font-size: 20px; 
     letter-spacing: 1px;
 }
 .reference {
@@ -143,8 +142,7 @@ a {
     #next-prayer-wrapper, 
     #current-time, 
     #current-timer-wrapper,
-    .subtitles > label,
-    .bold {
+    .subtitles > label {
         font-size: 18px !important;
         margin: 0;
         margin-bottom: 8px;
@@ -155,9 +153,7 @@ a {
         font-size: 78px;
         margin-bottom: 10px;
     }
-    .bold {
-        font-size: 16px;
-    }
+
 }
 @media only screen and (max-width: 350px) {
     #countdown {
@@ -183,11 +179,11 @@ a {
     .subtitles {
         font-size: 16px;
     }
-    /*
-    #all-prayer-times p {
-        font-size: 14px;
+}
+@media only screen and (min-width: 750px) and (max-width: 800px) {
+    #countdown {
+        font-size: 130px;
     }
-    */
 }
 @media only screen and (max-width: 800px) {
     .loading {
@@ -266,6 +262,7 @@ a {
     margin-bottom: 6px;
     padding: 5px;
     border-radius: 2px;
+    font-size: clamp(0.1em, 1em, 2em);
 }
 
 

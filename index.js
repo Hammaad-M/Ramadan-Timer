@@ -3,6 +3,9 @@ const app = express();
 const port = process.env.PORT || 8080;
 const cityTimezones = require('city-timezones');
 const ezlocalTime = require('ez-local-time');
+const tzlookup = require("tz-lookup");
+const nearbyCities = require("nearby-cities")
+
 
 const citiesOfClients = [
     'Bellevue',       'Everett',              'Santa Clara',
@@ -60,6 +63,16 @@ app.get('/customCityTime', async (req, res) => {
     res.json({
         status: 200,
         dateTime: dateObject.date + dateObject.time
+    });
+});
+app.get('/geoData', async (req, res) => {
+    const lat = req.get("lat");
+    const lon = req.get("lon");
+    const timezone = await tzlookup(lat, lon);
+    const city = nearbyCities({latitude: lat, longitude: lon})[0];
+    res.json({
+        timezone: timezone,
+        name: city.name
     });
 });
 app.get('/searchForCity', (req, res) => {
