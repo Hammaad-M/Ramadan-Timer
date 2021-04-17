@@ -135,6 +135,10 @@ function update(times) {
     init(params);
   }
   currentTime.textContent = to12hrTime(now);
+  if (now.getHours() === 12 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+    let params = (customCity) ? backup : null;
+    init(params);
+  }
   if (pauseCounter > 18 || nextPrayerIndex === 1) {
     if (pauseCounter == 19) {
       $('#dua').remove();
@@ -235,8 +239,8 @@ async function runFinalErrands(times, location, queryData, newUser) {
   }
   await asyncForEach();
   fajrTommorow = false;
-  if (times[0].indexOf("*") != -1) {
-    times[0].replace("*", "");
+  if (nextFajrTime.indexOf("*") != -1) {
+    nextFajrTime = nextFajrTime.replace("*", "");
     fajrTommorow = true;
   }
   displayAllPrayerTimes(times);
@@ -333,7 +337,7 @@ async function getPrayerDate(time, data, nextPrayer) {
   const minutes = string.substr(string.length-2, 2);
   let date = new Date(now.toDateString());
   date.setHours(hours, minutes, 0);
-  if (date - now < 0) {
+  if (date - now < 0 && nextPrayer === 0) {
     date.setDate(now.getDate() + 1); 
     const prayer = await getNextPrayerTime(date, data, nextPrayer);
     date = prayer.date;
@@ -341,7 +345,7 @@ async function getPrayerDate(time, data, nextPrayer) {
   }
   return {date, time};
 }
-function getNextPrayerTime(date, data, prayerIndex) {
+function getNextPrayerTime(date, data) {
   let dateString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
   let query = (useIP) ? 
     "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" + data.ip + "&date=" + dateString
@@ -354,12 +358,12 @@ function getNextPrayerTime(date, data, prayerIndex) {
           err = true;
           resolve(date);
         } else {
-          let string = timesToArray(res)[prayerIndex];
+          let string = timesToArray(res)[0];
           const hours = parseInt(string.substring(0, string.indexOf(":")));
           const minutes = parseInt(string.substring(string.indexOf(":")+1, string.indexOf("m")-2));
           date.setHours(hours);
           date.setMinutes(minutes);
-          resolve({date: date, time: string});
+          resolve({date: date, time: "*" + string});
         }
       });
     })
@@ -414,11 +418,11 @@ function setNextPrayer(first, times) {
       nextPrayerIndex = 0;
     }
   } else {
-    let closest = prayerTimes[0] - now;
+    let closest = null;
     let index = 0;
     prayerTimes.forEach((time, i) => {
       let diff = time - now;
-      if (diff <= closest) {
+      if ((closest === null) || (diff <= closest && diff > -1)) {
         closest = diff;
         index = i;
       }
