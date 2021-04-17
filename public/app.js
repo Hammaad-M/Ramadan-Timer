@@ -323,8 +323,8 @@ function geoLocate() {
       customCity = true;
       init({name: data.name, timezone: data.timezone, lat: lat, lon: lon, city: data.name});
     }, (err) => {
-      // alert(`ERROR(${err.code}): ${err.message}`);
-      alert("Unable to geolocate...");
+      alert(`ERROR(${err.code}): ${err.message}`);
+      // alert("Unable to geolocate...");
       init(backup)
     }, {
       enableHighAccuracy: true
