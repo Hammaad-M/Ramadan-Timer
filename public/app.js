@@ -193,34 +193,38 @@ function resetContent() {
   Object.keys(UIToggles).forEach(toggle => UIToggles[toggle] = null);
 }
 async function init(city) {
-  resetContent();
-  toggleLoadingScreen();
-  if (city != null && city == myCity) {
-    city = null;
-  } 
-  let user;
-  if (city === null) {
-    user = await getUserData();
-  } else {
-    user = await setCustomLocation(city);
-  }
-  const location = user.location;
-  const queryData = user.queryData;
-  let times = user.times;  
-  resetChangeLocation();
-  toggleLoadingScreen();
-  if (!err) { 
-    await runFinalErrands(times, location, queryData, (city == null && first) ? true : false);
-    update(times);
-    TID = setInterval(() => {
+  try {
+    resetContent();
+    toggleLoadingScreen();
+    if (city != null && city == myCity) {
+      city = null;
+    } 
+    let user;
+    if (city === null) {
+      user = await getUserData();
+    } else {
+      user = await setCustomLocation(city);
+    }
+    const location = user.location;
+    const queryData = user.queryData;
+    let times = user.times;  
+    resetChangeLocation();
+    toggleLoadingScreen();
+    if (!err) { 
+      await runFinalErrands(times, location, queryData, (city == null && first) ? true : false);
       update(times);
-    }, 1000); 
-  } else {
-    allPrayerTimes.style.display = "none";
-    errorScreen();
-    TID = setInterval(() => {
-      adaptUI();
-    }, 500); 
+      TID = setInterval(() => {
+        update(times);
+      }, 1000); 
+    } else {
+      allPrayerTimes.style.display = "none";
+      errorScreen();
+      TID = setInterval(() => {
+        adaptUI();
+      }, 500); 
+    }
+  } catch (err) {
+    alert(err)
   }
 }
 async function runFinalErrands(times, location, queryData, newUser) {
@@ -267,6 +271,7 @@ async function getUserData() {
   let queryData;
   let times
   try {
+    throw("err")
     location = await getLocation();
     queryData = { ip: location.ip }
     useIP = true;
@@ -280,13 +285,16 @@ async function getUserData() {
     customCity = false;
     now = new Date()
   } catch (err) {
-    if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
-      geoLocate();
-    } else { 
-      queryData = backup;
-      times = await getTimes(backup);      
-      location = "Seattle";
-    }
+    init(backup);
+    setTimeout(async () => {
+      if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
+        geoLocate();
+      } else { 
+        queryData = backup;
+        times = await getTimes(backup);      
+        location = "Seattle";
+      }
+    }, 50);
   } finally {
     return {location, queryData, times};
   }
