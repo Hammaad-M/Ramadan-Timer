@@ -119,6 +119,7 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 function update(times) {
+  let params = (customCity) ? backup : null;
   if (!customCity) {
     now = new Date();
   } else {
@@ -131,12 +132,10 @@ function update(times) {
     } 
   } 
   if (now.getDate() != lastInit.getDate() && loaded) {
-    let params = (customCity) ? backup : null;
     init(params);
   }
   currentTime.textContent = to12hrTime(now);
   if (now.getHours() === 12 && now.getMinutes() === 0 && now.getSeconds() === 0) {
-    let params = (customCity) ? backup : null;
     init(params);
   }
   if (pauseCounter > 18 || nextPrayerIndex === 1) {
@@ -193,38 +192,34 @@ function resetContent() {
   Object.keys(UIToggles).forEach(toggle => UIToggles[toggle] = null);
 }
 async function init(city) {
-  try {
-    resetContent();
-    toggleLoadingScreen();
-    if (city != null && city == myCity) {
-      city = null;
-    } 
-    let user;
-    if (city === null) {
-      user = await getUserData();
-    } else {
-      user = await setCustomLocation(city);
-    }
-    const location = user.location;
-    const queryData = user.queryData;
-    let times = user.times;  
-    resetChangeLocation();
-    toggleLoadingScreen();
-    if (!err) { 
-      await runFinalErrands(times, location, queryData, (city == null && first) ? true : false);
+  resetContent();
+  toggleLoadingScreen();
+  if (city != null && city == myCity) {
+    city = null;
+  } 
+  let user;
+  if (city === null) {
+    user = await getUserData();
+  } else {
+    user = await setCustomLocation(city);
+  }
+  const location = user.location;
+  const queryData = user.queryData;
+  let times = user.times;  
+  resetChangeLocation();
+  toggleLoadingScreen();
+  if (!err) { 
+    await runFinalErrands(times, location, queryData, (city == null && first) ? true : false);
+    update(times);
+    TID = setInterval(() => {
       update(times);
-      TID = setInterval(() => {
-        update(times);
-      }, 1000); 
-    } else {
-      allPrayerTimes.style.display = "none";
-      errorScreen();
-      TID = setInterval(() => {
-        adaptUI();
-      }, 500); 
-    }
-  } catch (err) {
-    alert(err)
+    }, 1000); 
+  } else {
+    allPrayerTimes.style.display = "none";
+    errorScreen();
+    TID = setInterval(() => {
+      adaptUI();
+    }, 500); 
   }
 }
 async function runFinalErrands(times, location, queryData, newUser) {
@@ -285,16 +280,13 @@ async function getUserData() {
     customCity = false;
     now = new Date()
   } catch (err) {
-    init(backup);
-    setTimeout(async () => {
-      if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
-        geoLocate();
-      } else { 
-        queryData = backup;
-        times = await getTimes(backup);      
-        location = "Seattle";
-      }
-    }, 50);
+    if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
+      geoLocate();
+    } else { 
+      queryData = backup;
+      times = await getTimes(backup);      
+      location = "Seattle";
+    }
   } finally {
     return {location, queryData, times};
   }
@@ -595,7 +587,7 @@ function createAlertEffects(s) {
   if (s % 2 == 0) {
     let color = (nextPrayerIndex == 1) ? "rgb(51,255,119)" : "rgb(255,51,51)";
     if (nextPrayerIndex == 0) {
-      countdown.style.textShadow = "0 0 15px white";
+      countdown.style.textShadow = "0 0 15px rgb(204, 45, 85)";
     } else {
       countdown.style.textShadow = "0 0 15px " + color;
     }
@@ -605,7 +597,7 @@ function createAlertEffects(s) {
   }
 }
 function eraseAlertEffects() {
-  countdown.style.textShadow = "0 0 10px black";
+  countdown.style.textShadow = "initial";
   countdown.style.color = "white";
 }
 function adaptUI() {
@@ -638,13 +630,11 @@ function adaptUI() {
     UIToggles.adhanResizedUp = false;
     $('#adhan-options').detach().appendTo($('#mobile-options-wrapper'));
     adhanOptions.classList.add("resized");
-    adhanOptions.classList.remove("hover-response");
   } else if (screenWidth >= 790 && !UIToggles.adhanResizedUp) {
     UIToggles.adhanResizedDown = false;
     UIToggles.adhanResizedUp = true;
     $('#adhan-options').detach().insertBefore($('#next-prayer-wrapper'));
     adhanOptions.classList.remove("resized");
-    adhanOptions.classList.add("hover-response");
   }
 
 }
