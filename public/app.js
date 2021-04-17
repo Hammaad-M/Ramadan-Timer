@@ -324,7 +324,11 @@ function geoLocate() {
       init({name: data.name, timezone: data.timezone, lat: lat, lon: lon, city: data.name});
     }, (err) => {
       alert(`ERROR(${err.code}): ${err.message}`);
-      // alert("Unable to geolocate...");
+      if (err.code === 1) {
+        alert("You have blocked geolocation...please enter your location manually.");
+      } else {
+        alert("Unable to geolocate...please enter your location manually.");
+      }
       init(backup)
     }, {
       enableHighAccuracy: true
