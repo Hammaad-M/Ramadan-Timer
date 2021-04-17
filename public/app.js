@@ -17,7 +17,7 @@ let now = new Date();
 let nextPrayerIndex;
 let customCity = false;
 let unix;
-let pauseCounter = 16;
+let pauseCounter = 19;
 let playAdhan = false;
 let fullAdhan = false;
 let fajrTommorow = false;
@@ -45,6 +45,7 @@ let backup = {
   city: "Seattle"
 }
 let lostFocus = false;
+let refresh = false;
 let first = true;
 let lastInit;
 let useIP;
@@ -109,27 +110,33 @@ async function getLocation() {
     })
   })
 }
+document.addEventListener('visibilitychange', () => {
+  if (lostFocus && !document.hidden) {
+    refresh = true;
+    lostFocus = false;
+  } else if (document.hidden) {
+    lostFocus = true;
+  }
+});
 function update(times) {
   if (!customCity) {
     now = new Date();
   } else {
     unix += 1000;
     now = new Date(unix);
-    if (!document.hasFocus()) {
-      lostFocus = true;
-    } else if (document.hasFocus() && lostFocus) {
+    if (refresh) {
       lostFocus = false;
       init(backup);
-    }
+      refresh = false;
+    } 
   } 
   if (now.getDate() != lastInit.getDate() && loaded) {
     let params = (customCity) ? backup : null;
-    console.log("found")
     init(params);
   }
   currentTime.textContent = to12hrTime(now);
-  if (pauseCounter > 14 || nextPrayerIndex === 1) {
-    if (pauseCounter == 15) {
+  if (pauseCounter > 18 || nextPrayerIndex === 1) {
+    if (pauseCounter == 19) {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
@@ -183,7 +190,6 @@ function resetContent() {
 }
 async function init(city) {
   resetContent();
-  console.log("init")
   toggleLoadingScreen();
   if (city != null && city == myCity) {
     city = null;
@@ -218,11 +224,7 @@ async function runFinalErrands(times, location, queryData, newUser) {
     const p = [];
     times.forEach((time, i) => {
       if (i === 0 || i === 3) {
-        let temp = time;
-        if (customCity) {
-          temp = to24hrTime(time);
-        }
-        p.push(getPrayerDate(temp, queryData));
+        p.push(getPrayerDate(time, queryData, i));
       }
     });
     const responses = await Promise.all(p);
@@ -325,24 +327,21 @@ function geoLocate() {
     });
   }
 }
-async function getPrayerDate(time, data) {
-  let string = time;
-  if (!customCity) {
-    string = to24hrTime(string);
-  } 
+async function getPrayerDate(time, data, nextPrayer) {
+  let string = to24hrTime(time);
   const hours = string.substr(0, (string.length == 5) ? 2 : 1);
   const minutes = string.substr(string.length-2, 2);
   let date = new Date(now.toDateString());
   date.setHours(hours, minutes, 0);
   if (date - now < 0) {
     date.setDate(now.getDate() + 1); 
-    const prayer = await getNextPrayerTime(date, data);
+    const prayer = await getNextPrayerTime(date, data, nextPrayer);
     date = prayer.date;
     time = prayer.time;
   }
   return {date, time};
 }
-function getNextPrayerTime(date, data) {
+function getNextPrayerTime(date, data, prayerIndex) {
   let dateString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
   let query = (useIP) ? 
     "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" + data.ip + "&date=" + dateString
@@ -355,12 +354,11 @@ function getNextPrayerTime(date, data) {
           err = true;
           resolve(date);
         } else {
-          let string = timesToArray(res)[0];
+          let string = timesToArray(res)[prayerIndex];
           const hours = parseInt(string.substring(0, string.indexOf(":")));
           const minutes = parseInt(string.substring(string.indexOf(":")+1, string.indexOf("m")-2));
           date.setHours(hours);
           date.setMinutes(minutes);
-          console.log(string);
           resolve({date: date, time: string});
         }
       });
