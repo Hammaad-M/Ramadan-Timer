@@ -598,17 +598,17 @@ function eraseAlertEffects() {
 }
 function adaptUI() {
   const screenWidth = document.body.clientWidth;
-  if (screenWidth < 1000) {
+  if (screenWidth < 1200) {
     if (!UIToggles.prayerResizedDown) {
       UIToggles.prayerResizedDown = true;
       UIToggles.prayerResizedUp = false;
       $('#all-prayer-times').detach().appendTo($('#mobile-options-wrapper'));
       allPrayerTimes.classList.add("resized");
     }
-    if (screenWidth >= 790 && !UIToggles.flexedPrayerTimes) {
+    if (screenWidth >= 900 && !UIToggles.flexedPrayerTimes) {
       flexPrayerTimes(true);
       UIToggles.flexedPrayerTimes = true;
-    } else if (screenWidth < 790 && UIToggles.flexedPrayerTimes) {
+    } else if (screenWidth < 900 && UIToggles.flexedPrayerTimes) {
       flexPrayerTimes(false);
       UIToggles.flexedPrayerTimes = false;
     }
@@ -634,7 +634,7 @@ function adaptUI() {
     adhanOptions.classList.remove("resized");
     adhanOptions.classList.add("hover-response");
   }
-  
+
 }
 function flexPrayerTimes(flex) {
   if (flex) {

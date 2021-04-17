@@ -67,7 +67,7 @@ a {
     position: relative;
     left: 50%;
     transform: translateX(-50%);
-    width: 15.5em;
+    width: clamp(12em, 17.5em, 20em);
     border: 1px solid black;
     border-radius: 5px;
 }
@@ -180,7 +180,7 @@ a {
         font-size: 16px;
     }
 }
-@media only screen and (min-width: 750px) and (max-width: 800px) {
+@media only screen and (min-width: 750px) and (max-width: 900px) {
     #countdown {
         font-size: 130px;
     }
@@ -207,7 +207,7 @@ a {
         font-size: 20px;
     }
     #countdown {
-        font-size: 150px;
+        font-size: 170px;
     }
 }
 #mobile-options-wrapper {
@@ -262,7 +262,7 @@ a {
     margin-bottom: 6px;
     padding: 5px;
     border-radius: 2px;
-    font-size: clamp(0.5em, 1em, 1.5em);
+    font-size: clamp(0.5em, 1.2em, 1.6em);
 }
 .loading {
     width: 100%;
