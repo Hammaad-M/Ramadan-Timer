@@ -129,20 +129,26 @@ function update(times) {
       lostFocus = false;
       init(backup);
       refresh = false;
+      return;
     } 
   } 
   if (now.getDate() != lastInit.getDate() && loaded) {
     init(params);
+    return;
   }
   currentTime.textContent = to12hrTime(now);
   if (now.getHours() === 12 && now.getMinutes() === 0 && now.getSeconds() === 0) {
     init(params);
+    return;
   }
   if (pauseCounter > 18 || nextPrayerIndex === 1) {
     if (pauseCounter == 19) {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
+    if (isNaN(remaining.minutes) || isNaN(remaining.hours) || isNaN(remaining.seconds)) {
+      window.location.reload(); 
+    }
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
