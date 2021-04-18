@@ -266,7 +266,6 @@ async function getUserData() {
   let queryData;
   let times
   try {
-    throw("err")
     location = await getLocation();
     queryData = { ip: location.ip }
     useIP = true;
@@ -323,7 +322,7 @@ function geoLocate() {
       customCity = true;
       init({name: data.name, timezone: data.timezone, lat: lat, lon: lon, city: data.name});
     }, (err) => {
-      alert(`ERROR(${err.code}): ${err.message}`);
+      // alert(`ERROR(${err.code}): ${err.message}`);
       if (err.code === 1) {
         alert("You have blocked geolocation...please enter your location manually.");
       } else {
