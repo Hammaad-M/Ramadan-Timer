@@ -279,6 +279,7 @@ async function getUserData() {
     customCity = false;
     now = new Date()
   } catch (err) {
+    console.log(err)
     if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
       geoLocate();
     } else { 
