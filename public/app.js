@@ -11,7 +11,10 @@ const locationInput = document.getElementById("city-input");
 const currentTime = document.getElementById("current-time");
 const allPrayerTimes = document.getElementById("all-prayer-times");
 const adhanOptions = document.getElementById("adhan-options");
+const dateDisplay = document.getElementById("date");
 document.getElementById("adhan-off").checked = true;
+const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 let prayerTimes = [];
 let now = new Date();
 let nextPrayerIndex;
@@ -49,7 +52,13 @@ let refresh = false;
 let first = true;
 let lastInit;
 let useIP;
-
+function newInit(params) {
+  clearInterval( TID );
+  if (reload) {
+    toggleLoadingScreen();
+  }
+  init(params);
+}
 async function getTimes(data) {
   if (!('fetch' in window)) {
     alert("Fetch API disabled or not found...unable to get prayer times.");
@@ -137,6 +146,7 @@ function update(times) {
     return;
   }
   currentTime.textContent = to12hrTime(now);
+  dateDisplay.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()} - `;
   if (now.getHours() === 12 && now.getMinutes() === 0 && now.getSeconds() === 0) {
     init(params);
     return;
@@ -146,9 +156,6 @@ function update(times) {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
-    if (isNaN(remaining.minutes) || isNaN(remaining.hours) || isNaN(remaining.seconds)) {
-      window.location.reload(); 
-    }
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
@@ -206,6 +213,9 @@ async function init(city) {
   let user;
   if (city === null) {
     user = await getUserData();
+    if (user === null) {
+      return;
+    }
   } else {
     user = await setCustomLocation(city);
   }
@@ -283,20 +293,19 @@ async function getUserData() {
     }
     locationForm.style.display = "none";
     customCity = false;
-    now = new Date()
+    now = new Date();
+    return {location, queryData, times};
   } catch (err) {
     console.log(err)
     if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
-      geoLocate();
+      geoLocate(true);
+      return null;
     } else { 
       queryData = backup;
       times = await getTimes(backup);      
       location = "Seattle";
     }
-  } finally {
-    return {location, queryData, times};
   }
-  
 }
 async function setCustomLocation(city) {
   backup = city;
@@ -310,10 +319,16 @@ async function setCustomLocation(city) {
   customCity = true;
   return {location: city.city, times: times, queryData: queryData};
 }
-function geoLocate() {
+function geoLocate(reload) {
   if (!navigator.geolocation) {
     alert("Geolocaton is not supported in your browser...");
   } else {
+    const checkReload = () => {
+      if (reload) {
+        console.log(reload);
+        toggleLoadingScreen();
+      }
+    }
     navigator.geolocation.getCurrentPosition(async (position) => {
       const lat = position.coords.latitude;
       const lon = position.coords.longitude;
@@ -327,6 +342,7 @@ function geoLocate() {
       });
       data = await data.json();
       customCity = true;
+      checkReload();
       init({name: data.name, timezone: data.timezone, lat: lat, lon: lon, city: data.name});
     }, (err) => {
       // alert(`ERROR(${err.code}): ${err.message}`);
@@ -335,7 +351,8 @@ function geoLocate() {
       } else {
         alert("Unable to geolocate...please enter your location manually.");
       }
-      init(backup)
+      checkReload();
+      init(backup);
     }, {
       enableHighAccuracy: true
     });
@@ -449,7 +466,7 @@ function setNextPrayer(first, times) {
     let prefix = (nextPrayerIndex == 0 && fajrTommorow) ? "Next " : "";
     display.textContent = prefix + prayers[nextPrayerIndex];
   });
-  let time = (fajrTommorow) ? nextFajrTime : times[nextPrayerIndex];
+  let time = (fajrTommorow && nextPrayerIndex == 0) ? nextFajrTime : times[nextPrayerIndex];
   prayerTimeDisplay.textContent = to12hrDisplayTime(time).toUpperCase();
 }
 function format(string) {
@@ -504,7 +521,7 @@ async function searchForLocation() {
     if (response.status === 200) {
       response.data.forEach((location, i) => {
         $('#options-wrapper').append(
-          `<button id="${i}" onclick='init({
+          `<button id="${i}" onclick='newInit({
             name: "${location.name}", lat: ${location.lat}, lon: ${location.lon}, timezone: "${location.timezone}", city: "${location.city}"
           })' class="drop-down-buttons subtitles">${location.name}</button>`
         );
@@ -518,7 +535,7 @@ async function searchForLocation() {
     }
     $('#options-wrapper').append(
       `<button id="find-me" onclick='init(null)' style="text-decoration: underline" class="drop-down-buttons subtitles">Guess my Location</button>
-      <button id="geolocate-me" onclick='geoLocate()' style="text-decoration: underline" class="drop-down-buttons subtitles">Geolocate Me</button>`
+      <button id="geolocate-me" onclick='geoLocate(false)' style="text-decoration: underline" class="drop-down-buttons subtitles">Geolocate Me</button>`
     );
     $('.dropdown').show();
   }
