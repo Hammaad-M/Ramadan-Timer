@@ -36,6 +36,7 @@ let myCity = null;
 let alertEffect = false;
 let err = false;
 let loaded = false;
+let midnight;
 let TID;
 let bgColor;
 let lastMinutes;
@@ -52,11 +53,17 @@ let refresh = false;
 let first = true;
 let lastInit;
 let useIP;
+
+function setMidnight() {
+  midnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1, // the next day, ...
+    0, 0, 0 // ...at 00:00:00 hours
+  );
+}
 function newInit(params) {
   clearInterval( TID );
-  if (reload) {
-    toggleLoadingScreen();
-  }
   init(params);
 }
 async function getTimes(data) {
@@ -128,7 +135,6 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 function update(times) {
-  let params = (customCity) ? backup : null;
   if (!customCity) {
     now = new Date();
   } else {
@@ -136,21 +142,13 @@ function update(times) {
     now = new Date(unix);
     if (refresh) {
       lostFocus = false;
-      init(backup);
       refresh = false;
+      init(backup);
       return;
     } 
   } 
-  if (now.getDate() != lastInit.getDate() && loaded) {
-    init(params);
-    return;
-  }
   currentTime.textContent = to12hrTime(now);
   dateDisplay.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()} - `;
-  if (now.getHours() === 12 && now.getMinutes() === 0 && now.getSeconds() === 0) {
-    init(params);
-    return;
-  }
   if (pauseCounter > 18 || nextPrayerIndex === 1) {
     if (pauseCounter == 19) {
       $('#dua').remove();
@@ -174,6 +172,12 @@ function update(times) {
     pauseCounter += 1;
   }
   adaptUI();
+  if (midnight - now <= 0) {
+    setMidnight();
+    let params = (customCity) ? backup : null;
+    newInit(params);
+    return;
+  }
 }
 function updateCountdown(remaining) {
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
@@ -225,7 +229,7 @@ async function init(city) {
   resetChangeLocation();
   toggleLoadingScreen();
   if (!err) { 
-    await runFinalErrands(times, location, queryData, (city == null && first) ? true : false);
+    await finalSetup(times, location, queryData, (city == null && first) ? true : false);
     update(times);
     TID = setInterval(() => {
       update(times);
@@ -238,7 +242,7 @@ async function init(city) {
     }, 500); 
   }
 }
-async function runFinalErrands(times, location, queryData, newUser) {
+async function finalSetup(times, location, queryData, newUser) {
   const asyncForEach = async () => {
     const p = [];
     times.forEach((time, i) => {
@@ -275,7 +279,7 @@ async function runFinalErrands(times, location, queryData, newUser) {
   setNextPrayer(true, times);
   countdown.classList.remove("err-display");
   allPrayerTimes.style.display = "block";
-  lastInit = new Date();
+  setMidnight();
 }
 async function getUserData() {
   let location;
@@ -297,6 +301,8 @@ async function getUserData() {
     return {location, queryData, times};
   } catch (err) {
     console.log(err)
+    // blank screen debug
+    alert(err)
     if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
       geoLocate(true);
       return null;
@@ -439,11 +445,11 @@ function msToTime(ms) {
   return {hours, minutes, seconds};
 }
 function setNextPrayer(first, times) {
+  const getIndex = () => {
+    return (nextPrayerIndex === 1) ? 3 : 0;
+  }
   if (!first) {
-    nextPrayerIndex += 1;
-    if (nextPrayerIndex >= prayers.length) {
-      nextPrayerIndex = 0;
-    }
+    nextPrayerIndex = (nextPrayerIndex === 1) ? 0 : 1;
   } else {
     let closest = null;
     let index = 0;
@@ -456,7 +462,7 @@ function setNextPrayer(first, times) {
     });
     nextPrayerIndex = index;
   }
-  if (nextPrayerIndex == 0) {
+  if (nextPrayerIndex === 0) {
     bgColor = "rgba(40, 73, 10, 0.925)";
   } else {
     bgColor = "rgba(109, 30, 30, 0.959)";
@@ -466,6 +472,7 @@ function setNextPrayer(first, times) {
     let prefix = (nextPrayerIndex == 0 && fajrTommorow) ? "Next " : "";
     display.textContent = prefix + prayers[nextPrayerIndex];
   });
+  console.log(times);
   let time = (fajrTommorow && nextPrayerIndex == 0) ? nextFajrTime : times[nextPrayerIndex];
   prayerTimeDisplay.textContent = to12hrDisplayTime(time).toUpperCase();
 }
@@ -643,7 +650,7 @@ function adaptUI() {
       flexPrayerTimes(false);
       UIToggles.flexedPrayerTimes = false;
     }
-  } else if (screenWidth >= 1000 && !UIToggles.prayerResizedUp) {
+  } else if (screenWidth >= 1200 && !UIToggles.prayerResizedUp) {
     UIToggles.prayerResizedDown = false;
     UIToggles.prayerResizedUp = true;
     UIToggles.flexedPrayerTimes = false;
