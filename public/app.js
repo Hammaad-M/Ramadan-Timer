@@ -157,6 +157,7 @@ function update(times) {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
+
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
@@ -340,7 +341,6 @@ function geoLocate(reload) {
   } else {
     const checkReload = () => {
       if (reload) {
-        console.log(reload);
         toggleLoadingScreen();
       }
     }
@@ -454,6 +454,13 @@ function msToTime(ms) {
   return {hours, minutes, seconds};
 }
 function setNextPrayer(first, times) {
+  const getIndex = () => {
+    if (times.length > 2) {
+      return (nextPrayerIndex == 1) ? 3 : 0;
+    } else {
+      return (nextPrayerIndex == 1) ? 1 : 0;
+    }
+  }
   if (!first) {
     nextPrayerIndex = (nextPrayerIndex === 1) ? 0 : 1;
   } else {
@@ -478,7 +485,7 @@ function setNextPrayer(first, times) {
     let prefix = (nextPrayerIndex == 0 && fajrTommorow) ? "Next " : "";
     display.textContent = prefix + prayers[nextPrayerIndex];
   });
-  let time = (fajrTommorow && nextPrayerIndex == 0) ? nextFajrTime : times[nextPrayerIndex];
+  let time = (fajrTommorow && nextPrayerIndex == 0) ? nextFajrTime : times[getIndex()];
   prayerTimeDisplay.textContent = to12hrDisplayTime(time).toUpperCase();
 }
 function format(string) {
