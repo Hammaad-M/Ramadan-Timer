@@ -117,6 +117,7 @@ async function getLocation() {
   return new Promise(async (resolve) => {
     await jQuery(async ($) => {
       $.getJSON('https://ipapi.co/json/', (data) => {
+        console.log(data);
         if (!data) {
           err = true;
         } else {
