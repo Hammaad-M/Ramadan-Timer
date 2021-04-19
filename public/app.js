@@ -286,7 +286,7 @@ async function finalSetup(times, location, queryData, newUser) {
   setMidnight();
 }
 async function getUserData() {
-  const handleError = () => {
+  const handleError = async () => {
     console.log(err)
     if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
       geoLocate(true);
@@ -303,7 +303,7 @@ async function getUserData() {
   try {
     location = await getLocation();
     if (location === null) {
-      handleError();
+      await handleError();
       return null;
     }
     queryData = { ip: location.ip }
@@ -319,7 +319,7 @@ async function getUserData() {
     now = new Date();
     return {location, queryData, times};
   } catch (err) {
-    handleError();
+    await handleError();
     return null;
   }
 }
