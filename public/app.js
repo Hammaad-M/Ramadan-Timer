@@ -302,7 +302,7 @@ async function getUserData() {
   } catch (err) {
     console.log(err)
     // blank screen debug
-    alert(err)
+    alert(`give this to hammaad please: ${err}`);
     if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
       geoLocate(true);
       return null;
@@ -472,7 +472,6 @@ function setNextPrayer(first, times) {
     let prefix = (nextPrayerIndex == 0 && fajrTommorow) ? "Next " : "";
     display.textContent = prefix + prayers[nextPrayerIndex];
   });
-  console.log(times);
   let time = (fajrTommorow && nextPrayerIndex == 0) ? nextFajrTime : times[nextPrayerIndex];
   prayerTimeDisplay.textContent = to12hrDisplayTime(time).toUpperCase();
 }
