@@ -125,7 +125,7 @@ async function getLocation() {
         }
       });
       res.fail(() => {
-        alert("Hammaad wins bug dies");
+        resolve(null);
       });
     })
   })
@@ -286,12 +286,25 @@ async function finalSetup(times, location, queryData, newUser) {
   setMidnight();
 }
 async function getUserData() {
+  const handleError = () => {
+    console.log(err)
+    if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
+      geoLocate(true);
+      return null;
+    } else { 
+      queryData = backup;
+      times = await getTimes(backup);      
+      location = "Seattle";
+    }
+  }
   let location;
   let queryData;
   let times
   try {
     location = await getLocation();
-    alert(location)
+    if (location === null) {
+      handleError();
+    }
     queryData = { ip: location.ip }
     useIP = true;
     const data = await getTimes(queryData);
@@ -305,17 +318,7 @@ async function getUserData() {
     now = new Date();
     return {location, queryData, times};
   } catch (err) {
-    console.log(err)
-    // blank screen debug
-    alert(`give this to hammaad please: ${err}`);
-    if (window.confirm("Unable to guess your location...would you like to geolocate?")) {
-      geoLocate(true);
-      return null;
-    } else { 
-      queryData = backup;
-      times = await getTimes(backup);      
-      location = "Seattle";
-    }
+    handleError();
   }
 }
 async function setCustomLocation(city) {
