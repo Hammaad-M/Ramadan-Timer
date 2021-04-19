@@ -362,7 +362,7 @@ function geoLocate(reload) {
     }, (err) => {
       // alert(`ERROR(${err.code}): ${err.message}`);
       if (err.code === 1) {
-        alert("You have blocked geolocation...please enter your location manually.");
+        alert("You have disabled geolocation...please enter your location manually.");
       } else {
         alert("Unable to geolocate...please enter your location manually.");
       }
@@ -553,8 +553,8 @@ async function searchForLocation() {
       );
     }
     $('#options-wrapper').append(
-      `<button id="find-me" onclick='init(null)' style="text-decoration: underline" class="drop-down-buttons subtitles">Guess my Location</button>
-      <button id="geolocate-me" onclick='geoLocate(false)' style="text-decoration: underline" class="drop-down-buttons subtitles">Geolocate Me</button>`
+      `<button id="find-me" onclick='init(null)' class="drop-down-buttons subtitles">Guess my Location</button>
+      <button id="geolocate-me" onclick='geoLocate(false)' class="drop-down-buttons subtitles">Geolocate Me</button>`
     );
     $('.dropdown').show();
   }
