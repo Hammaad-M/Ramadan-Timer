@@ -287,6 +287,7 @@ async function getUserData() {
   let times
   try {
     location = await getLocation();
+    alert(location)
     queryData = { ip: location.ip }
     useIP = true;
     const data = await getTimes(queryData);
@@ -445,9 +446,6 @@ function msToTime(ms) {
   return {hours, minutes, seconds};
 }
 function setNextPrayer(first, times) {
-  const getIndex = () => {
-    return (nextPrayerIndex === 1) ? 3 : 0;
-  }
   if (!first) {
     nextPrayerIndex = (nextPrayerIndex === 1) ? 0 : 1;
   } else {
