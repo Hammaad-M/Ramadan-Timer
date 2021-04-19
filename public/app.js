@@ -304,6 +304,7 @@ async function getUserData() {
     location = await getLocation();
     if (location === null) {
       handleError();
+      return null;
     }
     queryData = { ip: location.ip }
     useIP = true;
@@ -319,6 +320,7 @@ async function getUserData() {
     return {location, queryData, times};
   } catch (err) {
     handleError();
+    return null;
   }
 }
 async function setCustomLocation(city) {
