@@ -157,7 +157,11 @@ function update(times) {
       $('#dua').remove();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
-
+    if (remaining.minutes === lastMinutes && remaining.seconds > lastSeconds) {
+      let params = (customCity) ? backup : null;
+      newInit(params);
+      return;
+    }
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
@@ -182,6 +186,8 @@ function update(times) {
     newInit(params);
     return;
   }
+  lastMinutes = remaining.minutes;
+  lastSeconds = remaining.seconds;
 }
 function updateCountdown(remaining) {
   countdown.textContent = `${format(remaining.hours)}:${format(remaining.minutes)}:${format(remaining.seconds)}`;
