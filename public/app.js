@@ -53,6 +53,7 @@ let refresh = false;
 let first = true;
 let lastInit;
 let useIP;
+let t = 4;
 
 function setMidnight() {
   midnight = new Date(
@@ -155,9 +156,18 @@ function update(times) {
   if (pauseCounter > 18 || nextPrayerIndex === 1) {
     if (pauseCounter == 19) {
       $('#dua').remove();
+      eraseAlertEffects();
     }
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
+    /*
+    // test
+    remaining.hours = 0;
+    remaining.minutes = 0;
+    remaining.seconds = t;
+    t -= 1;
+    */
     if (remaining.minutes === lastMinutes && remaining.seconds > lastSeconds) {
+      console.log("counter going up");
       let params = (customCity) ? backup : null;
       newInit(params);
       return;
@@ -633,7 +643,6 @@ async function endCountdown() {
       console.log(err);
     }
   }
-  eraseAlertEffects(0);
 }
 function createAlertEffects(s) {
   if (s % 2 == 0) {
