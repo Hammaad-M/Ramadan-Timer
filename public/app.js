@@ -37,7 +37,7 @@ let alertEffect = false;
 let err = false;
 let loaded = false;
 let midnight;
-let TID;
+let TIDs = [];
 let bgColor;
 let lastMinutes;
 let lastSeconds;
@@ -53,8 +53,10 @@ let refresh = false;
 let first = true;
 let lastInit;
 let useIP;
-let t = 4;
-
+// let t = 4;
+const stopIntervals = () => {
+  TIDs.forEach(TID => clearInterval( TID ));
+}
 function setMidnight() {
   midnight = new Date(
     now.getFullYear(),
@@ -64,7 +66,7 @@ function setMidnight() {
   );
 }
 function newInit(params) {
-  clearInterval( TID );
+  stopIntervals();
   init(params);
 }
 async function getTimes(data) {
@@ -147,7 +149,7 @@ function update(times) {
     if (refresh) {
       lostFocus = false;
       refresh = false;
-      init(backup);
+      newInit(backup);
       return;
     } 
   } 
@@ -219,7 +221,7 @@ async function getCustomCityTime(timezone) {
   
 }
 function resetContent() {
-  clearInterval( TID ); 
+  stopIntervals(); 
   addHoverEffect("find-me");
   addHoverEffect("geolocate-me");
   $('.dropdown').hide();
@@ -251,15 +253,15 @@ async function init(city) {
   if (!err) { 
     await finalSetup(times, location, queryData, (city == null && first) ? true : false);
     update(times);
-    TID = setInterval(() => {
+    TIDs.push(setInterval(() => {
       update(times);
-    }, 1000); 
+    }, 1000)); 
   } else {
     allPrayerTimes.style.display = "none";
     errorScreen();
-    TID = setInterval(() => {
+    TIDs.push(setInterval(() => {
       adaptUI();
-    }, 500); 
+    }, 500)); 
   }
 }
 async function finalSetup(times, location, queryData, newUser) {
@@ -374,7 +376,7 @@ function geoLocate(reload) {
       data = await data.json();
       customCity = true;
       checkReload();
-      init({name: data.name, timezone: data.timezone, lat: lat, lon: lon, city: data.name});
+      newInit({name: data.name, timezone: data.timezone, lat: lat, lon: lon, city: data.name});
     }, (err) => {
       // alert(`ERROR(${err.code}): ${err.message}`);
       if (err.code === 1) {
@@ -383,7 +385,7 @@ function geoLocate(reload) {
         alert("Unable to geolocate...please enter your location manually.");
       }
       checkReload();
-      init(backup);
+      newInit(backup);
     }, {
       enableHighAccuracy: true
     });
@@ -569,7 +571,7 @@ async function searchForLocation() {
       );
     }
     $('#options-wrapper').append(
-      `<button id="find-me" onclick='init(null)' class="drop-down-buttons subtitles">Guess my Location</button>
+      `<button id="find-me" onclick='newInit(null)' class="drop-down-buttons subtitles">Guess my Location</button>
       <button id="geolocate-me" onclick='geoLocate(false)' class="drop-down-buttons subtitles">Geolocate Me</button>`
     );
     $('.dropdown').show();

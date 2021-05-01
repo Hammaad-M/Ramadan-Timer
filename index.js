@@ -7,7 +7,7 @@ const tzlookup = require("tz-lookup");
 const nearbyCities = require("nearby-cities")
 const citiesOfClients = [];
 let totalVisits = 0;
-let visitsToday = 0;
+let visitsThisHour = 0;
 
 app.use(express.static(__dirname + '/public'));
 app.listen(port, () => console.log("Listening at port " + port));
@@ -80,8 +80,8 @@ const formatDate = (date) => {
 }
 // log usage data every 1 hour
 setInterval(() => { 
-    let now = new Date();
-    console.log(`Date: ${now.toDateString()} ${formatDate(now)}\nToday's Visits: ${visitsToday}`);
+    const now = new Date();
+    console.log(`Date: ${now.toDateString()} ${formatDate(now)}\nHour's Visits: ${visitsThisHour}`);
     console.log("Total Visits: " + totalVisits + "\n\n");
-    visitsToday = 0;
-}, 1000);
+    visitsThisHour = 0;
+}, 3600000);
