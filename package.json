@@ -4,8 +4,7 @@
   "description": "fasting countdown site",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "console.log(\"test\");"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
