@@ -1,278 +1,279 @@
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@700&display=swap");
 
 body {
-    padding: 10px;
-    margin: 0;;
-    font-family: 'Kanit',sans-serif;
-    text-align: center;
-    color: white;
-    overflow-x: hidden;
+  padding: 10px;
+  margin: 0;
+  font-family: "Kanit", sans-serif;
+  text-align: center;
+  color: white;
+  overflow-x: hidden;
 }
 :root {
-    --sub-background: rgba(238, 238, 238, 0.1);
+  --sub-background: rgba(238, 238, 238, 0.1);
 }
 input {
-    border: 1px solid white;
-    background-color: white;
+  border: 1px solid white;
+  background-color: white;
 }
-input[type='radio'] {
-    float: right;
-    margin-top: 5px;
+input[type="radio"] {
+  float: right;
+  margin-top: 5px;
 }
 a {
-    color: white;
+  color: white;
 }
 .content {
-    width: 100%;
+  width: 100%;
 }
 .content img {
-    border: 3px solid black;
-    max-width: 35em;
-    float: center;
+  border: 3px solid black;
+  max-width: 35em;
+  float: center;
 }
 #change-location {
-    padding: 10px;
-    background-color: var(--sub-background);
-    color: white;
-    border: 1px solid white;
-    border-radius: 4px;
-    font-size: 20px;
+  padding: 8px 10px;
+  background-color: var(--sub-background);
+  color: white;
+  border: 1px solid white;
+  border-radius: 4px;
+  font-size: 16px;
 }
 .location-form input {
-    padding: 5px;
-    width: 40%;
-    max-width: 12em;
+  padding: 5px;
+  width: 40%;
+  max-width: 12em;
 }
 .user-input {
-    border-radius: 5px;
-    border: 2px solid black;
-    font-family: 'Kanit', sans-serif;
+  border-radius: 5px;
+  border: 2px solid black;
+  font-family: "Kanit", sans-serif;
 }
 .dropdown {
-    margin: 0;
-    z-index: 2;
-    padding: 0;
-    position: absolute;
-    right: 0;
-    left: 0;
-    padding: 0 18px;
-    border-radius: 2px;
+  margin: 0;
+  z-index: 2;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  left: 0;
+  padding: 0 18px;
+  border-radius: 2px;
 }
 #options-wrapper {
-    max-height: 16.5em;
-    overflow-y: scroll;
-    background-color: transparent;
-    padding: 0;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
-    width: clamp(12em, 17.5em, 20em);
-    border: 1px solid black;
-    border-radius: 5px;
+  max-height: 16.5em;
+  overflow-y: scroll;
+  background-color: transparent;
+  padding: 0;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(12em, 17.5em, 20em);
+  border: 1px solid black;
+  border-radius: 5px;
 }
 .drop-down-buttons {
-    margin: 0;
-    padding: 10px;
-    border: none;
-    background-color: white;
-    color: black;
-    width: 100%;
-    transition: 0.2;
-    border-radius: 1px;
-    font-family: 'Kanit',sans-serif;
-    font-size: 16px;
+  margin: 0;
+  padding: 10px;
+  border: none;
+  background-color: white;
+  color: black;
+  width: 100%;
+  transition: 0.2;
+  border-radius: 1px;
+  font-family: "Kanit", sans-serif;
+  font-size: 16px;
 }
 .drop-down-buttons:hover {
-    border: 2px solid white !important;
+  border: 2px solid white !important;
 }
 .hover-response {
-    transition: 0.3s;
+  transition: 0.3s;
 }
 .hover-response:hover {
-    background-color: rgba(238, 238, 238, 1) !important;
-    color: black !important;
-    border: 2px solid black !important;
-    border-radius: 5px !important;
-    padding: 8px !important;
+  background-color: rgba(238, 238, 238, 1) !important;
+  color: black !important;
+  border: 1px solid black !important;
+  border-radius: 5px !important;
+  padding: 8px 10px !important;
 }
 #countdown {
-    font-family: 'Ubuntu Mono', sans-serif;
-    font-variant-numeric: tabular-nums;
-    font-size: 95px;
-    font-weight: bolder;
-    letter-spacing: 1px;
-    padding: 0;
-    margin-bottom: 0.4em;
-    margin: 0;
+  font-family: "Ubuntu Mono", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 95px;
+  font-weight: bolder;
+  letter-spacing: 1px;
+  padding: 0;
+  margin-bottom: 0.4em;
+  margin: 0;
 }
 .err-display {
-    font-size: 32px !important;
-    letter-spacing: 2px !important;
+  font-size: 32px !important;
+  letter-spacing: 2px !important;
 }
 .bold {
-    letter-spacing: 1px;
+  letter-spacing: 1px;
 }
 .reference {
-    position: relative;
-    text-align: center;
-    width: 100%;
-    margin: 0 auto;
-    margin-top: 8em;
+  position: relative;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 8em;
 }
 #current-time {
-    font-family: 'Ubuntu Mono', sans-serif;
+  font-family: "Ubuntu Mono", sans-serif;
 }
 @media only screen and (max-width: 500px) {
-    #countdown {
-        font-size: 88px;
-        margin-bottom: 10px;
-        font-family: 'Ubuntu Mono', sans-serif;
-        letter-spacing: 0;
-    }
-    #change-location {
-        font-size: 14px;
-    }
-    .subtitles {
-        font-size: 16px;
-    }
-    #info, #next-prayer-wrapper {
-        font-size: 18px !important;
-        margin: 0;
-        margin-bottom: 8px;
-    }
+  #countdown {
+    font-size: 88px;
+    margin-bottom: 10px;
+    font-family: "Ubuntu Mono", sans-serif;
+    letter-spacing: 0;
+  }
+  #change-location {
+    font-size: 14px;
+  }
+  .subtitles {
+    font-size: 16px;
+  }
+  #info,
+  #next-prayer-wrapper {
+    font-size: 18px !important;
+    margin: 0;
+    margin-bottom: 8px;
+  }
 }
 @media only screen and (max-width: 400px) {
-    #countdown {
-        font-size: 80px;
-        margin-bottom: 10px;
-    }
+  #countdown {
+    font-size: 80px;
+    margin-bottom: 10px;
+  }
 }
 @media only screen and (max-width: 350px) {
-    #countdown {
-        font-size: 48px;
-    }
-    .err-display {
-        font-size: 18px !important;
-    }
+  #countdown {
+    font-size: 48px;
+  }
+  .err-display {
+    font-size: 18px !important;
+  }
 }
 @media only screen and (max-width: 300px) {
-    #countdown {
-        font-size: 38px;
-    }
+  #countdown {
+    font-size: 38px;
+  }
 }
 @media only screen and (max-width: 750px) and (min-width: 501px) {
-    #countdown {
-        font-size: 150px;
-        letter-spacing: -3px;
-    }
-    .user-input {
-        font-size: 16px;
-    }
-    .subtitles {
-        font-size: 20px;
-    }
-    #current-time {
-        font-size: 25px !important;
-    }
+  #countdown {
+    font-size: 150px;
+    letter-spacing: -3px;
+  }
+  .user-input {
+    font-size: 16px;
+  }
+  .subtitles {
+    font-size: 20px;
+  }
+  #current-time {
+    font-size: 25px !important;
+  }
 }
 @media only screen and (min-width: 750px) and (max-width: 900px) {
-    #countdown {
-        font-size: 130px;
-    }
-    .subtitles {
-        font-size: 20px;
-    }
+  #countdown {
+    font-size: 130px;
+  }
+  .subtitles {
+    font-size: 20px;
+  }
 }
 @media only screen and (max-width: 800px) {
-    .loading {
-        font-size: 10px;
-    }
+  .loading {
+    font-size: 10px;
+  }
 }
 @media only screen and (min-width: 900px) {
-    .reference {
-        position: absolute;
-        bottom: 10px;
-    }
-    #countdown {
-        font-size: 130px;
-    }
-    .subtitles {
-        font-size: 18px;
-    }
+  .reference {
+    position: absolute;
+    bottom: 10px;
+  }
+  #countdown {
+    font-size: 130px;
+  }
+  .subtitles {
+    font-size: 18px;
+  }
 }
 @media only screen and (min-width: 1200px) {
-    .subtitles {
-        font-size: 20px;
-    }
-    #countdown {
-        font-size: 170px;
-    }
+  .subtitles {
+    font-size: 20px;
+  }
+  #countdown {
+    font-size: 170px;
+  }
 }
 #mobile-options-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 #mobile-options-wrapper > * {
-    margin: 0;
-    margin-right: 0.5em;
+  margin: 0;
+  margin-right: 0.5em;
 }
 .resizable {
-    position: absolute;
-    top: 0;
-    border-radius: 10px;
-    height: max-content;
-    width: max-content;
-    padding: 10px;
-    margin: 0;
+  position: absolute;
+  top: 0;
+  border-radius: 10px;
+  height: max-content;
+  width: max-content;
+  padding: 10px;
+  margin: 0;
 }
 .options {
-    float: right;
-    right: 0;
-    text-align: right;
+  float: right;
+  right: 0;
+  text-align: right;
 }
 .resized {
-    text-align: center;
-    position: relative;
-    float: initial;
-    margin: auto;
-    display: inline-block;
-    margin-right: 20px;
+  text-align: center;
+  position: relative;
+  float: initial;
+  margin: auto;
+  display: inline-block;
+  margin-right: 20px;
 }
 #adhan-options {
-    background-color: var(--sub-background);
-    margin: 5px;
-    border-radius: 3px;
+  background-color: var(--sub-background);
+  margin: 5px;
+  border-radius: 3px;
 }
 #all-prayer-times {
-    padding-top: 4px;
-    text-align: left;
-    letter-spacing: 1px;
+  padding-top: 4px;
+  text-align: left;
+  letter-spacing: 1px;
 }
 #all-prayer-times span {
-    float: right;
+  float: right;
 }
 #all-prayer-times p {
-    background-color: var(--sub-background);
-    margin: 0;
-    margin-bottom: 6px;
-    padding: 10px;
-    border-radius: 2px;
-    font-size: clamp(0.5em, 1.1em, 1.6em);
+  background-color: var(--sub-background);
+  margin: 0;
+  margin-bottom: 6px;
+  padding: 10px;
+  border-radius: 2px;
+  font-size: clamp(0.5em, 1.1em, 1.6em);
 }
 .loading {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 .loading h1 {
-    letter-spacing: 2px;
-    font-weight: bold;
-    text-align: center;
-    font-size: 5ch;
-    margin-top: 1em;
+  letter-spacing: 2px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 5ch;
+  margin-top: 1em;
 }
 .loading h2 {
-    font-size: 3ch;
-    letter-spacing: 3px;
+  font-size: 3ch;
+  letter-spacing: 3px;
 }
