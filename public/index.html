@@ -28,13 +28,18 @@
         <span class="next-prayer"></span> Time: <span class="subtitles" id="prayer-time"></span>
         <div class="resizable" id="all-prayer-times"></div> 
       </p>
+      <span id="progress-display"></span>
+      <div class="progress-container">
+        
+        <div class="progress-bar"></div>
+      </div>
       <div class="location-form">
         <label for="city" class="subtitles">City: </label>
         <input class="user-input subtitles" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
       </div>
       <button class="user-input hover-response" id="change-location" onclick="changeLocation()">Change Location</button>
       <div class="dropdown">
-        <div id="options-wrapper">
+        <div id="options-wrapper"> 
           <button id="find-me" onclick='init(null)' class="drop-down-buttons subtitles">Guess my Location</button>
           <button id="geolocate-me" onclick='geoLocate(false)' class="drop-down-buttons subtitles">Geolocate Me</button>
         </div>
@@ -52,7 +57,7 @@
       <label class="subtitles" for="off-adhan">Off </label>
       <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
     </div>
-    <p class="subtitles reference">©2021 <a href="https://www.hammaadmemon.com">Hammaad Memon</a></p>
+    <p class="subtitles reference">©2022 <a href="https://www.hammaadmemon.com">Hammaad Memon</a></p>
   </section>
   <script src="app.js"></script>
 </body>
