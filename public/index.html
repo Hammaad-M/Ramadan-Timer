@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Fasting Countdown</title>
+    <title>Ramadan Timer</title>
     <script
-  src="https://code.jquery.com/jquery-3.6.0.min.js"
-  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-  crossorigin="anonymous"></script>
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body onload="init(null)">
@@ -57,7 +58,7 @@
       <label class="subtitles" for="off-adhan">Off </label>
       <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
     </div>
-    <p class="subtitles reference">©2022 <a href="https://www.hammaadmemon.com">Hammaad Memon</a></p>
+    <p class="subtitles reference">©<span id="current-year"></span> <a href="https://www.hammaadmemon.com">Hammaad Memon</a></p>
   </section>
   <script src="app.js"></script>
 </body>

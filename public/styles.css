@@ -71,6 +71,8 @@ a {
   padding: 5px;
   width: 40%;
   max-width: 12em;
+  width: var(--sub-background) !important;
+  border: 1px solid white !important;
 }
 .user-input {
   border-radius: 5px;

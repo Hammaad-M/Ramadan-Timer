@@ -313,6 +313,7 @@ async function init(city) {
       city == null && first ? true : false
     );
 
+    document.getElementById("current-year").textContent = now.getFullYear();
     // set fast duration
     if (nextPrayerIndex === 0) {
       fastDuration = fajrTommorow
@@ -365,9 +366,8 @@ async function finalSetup(times, location, queryData, newUser) {
   );
   yesterdayMaghrib = to24hrTime(times[3]);
   yesterdayMaghrib = new Date(
-    today[0],
-    today[1],
-    today[2] - 1,
+    ...today.slice(0, 2),
+    now.getHours() > 12 ? today[2] : today[2] - 1,
     yesterdayMaghrib.substr(0, yesterdayMaghrib.indexOf(":")),
     yesterdayMaghrib.substr(yesterdayMaghrib.indexOf(":") + 1),
     0,
@@ -502,7 +502,7 @@ async function getPrayerDate(time, data, nextPrayer) {
   const minutes = string.substr(string.length - 2, 2);
   let date = new Date(now.toDateString());
   date.setHours(hours, minutes, 0);
-  if (date - now < 0) {
+  if (date - now < 0 && nextPrayer === 0) {
     date.setDate(now.getDate() + 1);
     const prayer = await getNextPrayerTime(date, data, nextPrayer);
     date = prayer.date;
