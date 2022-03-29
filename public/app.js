@@ -15,7 +15,7 @@ const dateDisplay = document.getElementById("date");
 const progressBar = document.querySelector(".progress-bar");
 const progressDisplay = document.querySelector("#progress-display");
 document.getElementById("adhan-off").checked = true;
-let TIDs;
+let TIDs = [];
 const days = [
   "Sunday",
   "Monday",
