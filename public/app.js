@@ -15,6 +15,7 @@ const dateDisplay = document.getElementById("date");
 const progressBar = document.querySelector(".progress-bar");
 const progressDisplay = document.querySelector("#progress-display");
 document.getElementById("adhan-off").checked = true;
+let TIDs;
 const days = [
   "Sunday",
   "Monday",
@@ -60,7 +61,6 @@ let alertEffect = false;
 let err = false;
 let loaded = false;
 let midnight;
-let TID;
 let bgColor;
 let lastMinutes;
 let lastSeconds;
@@ -90,7 +90,7 @@ function setMidnight() {
   );
 }
 function newInit(params) {
-  clearInterval(TID);
+  TIDs.forEach(TID => clearInterval(TID));
   init(params);
 }
 async function getTimes(data) {
@@ -276,7 +276,7 @@ async function getCustomCityTime(timezone) {
   }
 }
 function resetContent() {
-  clearInterval(TID);
+  TIDs.forEach(TID => clearInterval(TID));
   addHoverEffect("find-me");
   addHoverEffect("geolocate-me");
   $(".dropdown").hide();
@@ -324,15 +324,15 @@ async function init(city) {
     else fastDuration = prayerTimes[1] - todayFajrTime;
 
     update(times);
-    TID = setInterval(() => {
+    TIDs.push(setInterval(() => {
       update(times);
-    }, 1000);
+    }, 1000));
   } else {
     allPrayerTimes.style.display = "none";
     errorScreen();
-    TID = setInterval(() => {
+    TIDs.push(setInterval(() => {
       adaptUI();
-    }, 500);
+    }, 500));
   }
 }
 async function finalSetup(times, location, queryData, newUser) {
