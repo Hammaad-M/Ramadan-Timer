@@ -78,6 +78,7 @@ let lastInit;
 let useIP;
 let fastDuration;
 let todayFajrTime;
+let initializing = false;
 
 function setMidnight() {
   midnight = new Date(
@@ -90,7 +91,13 @@ function setMidnight() {
   );
 }
 function newInit(params) {
-  TIDs.forEach(TID => clearInterval(TID));
+  // return if an initialization call has already been made
+  if (initializing) {
+    return;
+  }
+
+  initializing = true;
+  TIDs.forEach((TID) => clearInterval(TID));
   init(params);
 }
 async function getTimes(data) {
@@ -183,7 +190,7 @@ function updateProgressBar(total, progress) {
 
     progressBar.style.width = percentage + "%";
     progressDisplay.textContent =
-      "Fasting Time: " + Math.round(displayPercentage) + "% Completed";
+      "Fasting Time: " + displayPercentage + "% Completed";
   } else {
     const percentage = (1 - progress / total) * 100;
     progressBar.style.width = percentage + "%";
@@ -202,7 +209,7 @@ function update(times) {
     if (refresh) {
       lostFocus = false;
       refresh = false;
-      init(backup);
+      newInit(backup);
       return;
     }
   }
@@ -254,6 +261,9 @@ function update(times) {
   }
   lastMinutes = remaining.minutes;
   lastSeconds = remaining.seconds;
+  // if (nextPrayerIndex < 0 || nextPrayerIndex > 1) {
+  //   newInit(params);
+  // }
 }
 function updateCountdown(remaining) {
   countdown.textContent = `${format(remaining.hours)}:${format(
@@ -276,7 +286,7 @@ async function getCustomCityTime(timezone) {
   }
 }
 function resetContent() {
-  TIDs.forEach(TID => clearInterval(TID));
+  TIDs.forEach((TID) => clearInterval(TID));
   addHoverEffect("find-me");
   addHoverEffect("geolocate-me");
   $(".dropdown").hide();
@@ -322,17 +332,22 @@ async function init(city) {
     }
     // prayerTimes[0] is next Fajr time if next fajr is tommorow
     else fastDuration = prayerTimes[1] - todayFajrTime;
-
+    initializing = false;
     update(times);
-    TIDs.push(setInterval(() => {
-      update(times);
-    }, 1000));
+    TIDs.push(
+      setInterval(() => {
+        update(times);
+      }, 1000)
+    );
   } else {
+    initializing = false;
     allPrayerTimes.style.display = "none";
     errorScreen();
-    TIDs.push(setInterval(() => {
-      adaptUI();
-    }, 500));
+    TIDs.push(
+      setInterval(() => {
+        adaptUI();
+      }, 500)
+    );
   }
 }
 async function finalSetup(times, location, queryData, newUser) {
@@ -470,7 +485,7 @@ function geoLocate(reload) {
         data = await data.json();
         customCity = true;
         checkReload();
-        init({
+        newInit({
           name: data.name,
           timezone: data.timezone,
           lat: lat,
@@ -488,7 +503,7 @@ function geoLocate(reload) {
           alert("Unable to geolocate...please enter your location manually.");
         }
         checkReload();
-        init(backup);
+        newInit(backup);
       },
       {
         enableHighAccuracy: true,
@@ -700,7 +715,7 @@ async function searchForLocation() {
       $("#options-wrapper").append(`<p class="subtitles">No Match Found</p>`);
     }
     $("#options-wrapper").append(
-      `<button id="find-me" onclick='init(null)' class="drop-down-buttons subtitles">Guess my Location</button>
+      `<button id="find-me" onclick='newInit(null)' class="drop-down-buttons subtitles">Guess my Location</button>
       <button id="geolocate-me" onclick='geoLocate(false)' class="drop-down-buttons subtitles">Geolocate Me</button>`
     );
     $(".dropdown").show();
