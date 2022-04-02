@@ -305,6 +305,7 @@ async function init(city) {
   if (city === null) {
     user = await getUserData();
     if (user === null) {
+      newInit(backup);
       return;
     }
   } else {
@@ -408,6 +409,10 @@ async function finalSetup(times, location, queryData, newUser) {
   setMidnight();
 }
 async function getUserData() {
+  let location;
+  let queryData;
+  let times;
+
   const handleError = async () => {
     console.log(err);
     if (
@@ -421,11 +426,10 @@ async function getUserData() {
       queryData = backup;
       times = await getTimes(backup);
       location = "Seattle";
+      toggleLoadingScreen();
     }
   };
-  let location;
-  let queryData;
-  let times;
+
   try {
     location = await getLocation();
     if (location === null) {
