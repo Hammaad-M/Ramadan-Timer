@@ -84,13 +84,20 @@ const formatDate = (date) => {
   return `${hours}:${minutes} ${suffix}`;
 };
 // log usage data every 1 hour
-setInterval(() => {
+
+const logUsageData = () => {
   const now = new Date();
   console.log(
-    `Date: ${now.toDateString()} ${formatDate(
+    `\nDate: ${now.toDateString()} ${formatDate(
       now
     )}\nHour's Visits: ${visitsThisHour}`
   );
-  console.log("Total Visits: " + totalVisits + "\n\n");
+  console.log("Total Visits: " + totalVisits);
+  console.log(
+    "Total number of cities accessed: " + citiesOfClients.length + "\n\n"
+  );
   visitsThisHour = 0;
-}, 3600000);
+};
+
+logUsageData();
+setInterval(logUsageData, 3600000);
