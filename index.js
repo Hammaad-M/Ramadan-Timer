@@ -72,12 +72,16 @@ app.get("/searchForCity", (req, res) => {
 });
 const formatDate = (date) => {
   let hours = date.getHours();
+  let minutes = date.getMinutes();
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
   let suffix = "am";
   if (hours > 12) {
     hours -= 12;
     suffix = "pm";
   }
-  return `${hours}:${date.getMinutes()} ${suffix}`;
+  return `${hours}:${minutes} ${suffix}`;
 };
 // log usage data every 1 hour
 setInterval(() => {
