@@ -7,7 +7,7 @@ const ezlocalTime = require("ez-local-time");
 const tzlookup = require("tz-lookup");
 const nearbyCities = require("nearby-cities");
 const citiesOfClients = [];
-let totalVisits = 0;
+let totalVisits = 1350;
 let visitsThisHour = 0;
 console.log(__dirname);
 app.use(express.static(path.join(__dirname, "public")));
@@ -17,6 +17,7 @@ app.use(express.json({ limit: "5gb" }));
 app.post("/client", (request, response) => {
   const city = request.body.location;
   totalVisits++;
+  visitsThisHour++;
   if (citiesOfClients.indexOf(city) == -1) {
     citiesOfClients.push(city);
     console.log(city + " has sent its first ambassador!");

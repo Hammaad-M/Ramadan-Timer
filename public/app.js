@@ -414,7 +414,7 @@ async function getUserData() {
   let times;
 
   const handleError = async () => {
-    console.log(err);
+    console.error(err);
     if (
       window.confirm(
         "Unable to guess your location...would you like to geolocate?"
@@ -424,6 +424,7 @@ async function getUserData() {
       return null;
     } else {
       queryData = backup;
+      useIP = false;
       times = await getTimes(backup);
       location = "Seattle";
       toggleLoadingScreen();
@@ -498,7 +499,6 @@ function geoLocate(reload) {
         });
       },
       (err) => {
-        // alert(`ERROR(${err.code}): ${err.message}`);
         if (err.code === 1) {
           alert(
             "You have disabled geolocation...please enter your location manually."
