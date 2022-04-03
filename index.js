@@ -71,7 +71,7 @@ app.get("/searchForCity", (req, res) => {
   }
 });
 const formatDate = (date) => {
-  const hours = date.getHours();
+  let hours = date.getHours();
   let suffix = "am";
   if (hours > 12) {
     hours -= 12;
