@@ -115,6 +115,7 @@ async function getTimes(data) {
           (response) => {
             if (response.success == false || !response) {
               err = true;
+              errorScreen();
             } else {
               times = timesToArray(response);
               let city = response.settings.location.city;
@@ -165,6 +166,7 @@ async function getLocation() {
       const res = $.getJSON("https://ipapi.co/json/", (data) => {
         if (!data) {
           err = true;
+          errorScreen();
         } else {
           resolve(data);
         }
@@ -279,8 +281,10 @@ async function getCustomCityTime(timezone) {
     },
   });
   const res = await response.json();
+
   if (res.status == 404) {
     err = true;
+    errorScreen();
   } else {
     return new Date(res.dateTime).getTime();
   }
@@ -886,9 +890,16 @@ function toggleLoadingScreen() {
 }
 function errorScreen() {
   toggleLoadingScreen();
+  const page = document.querySelector(".page");
+  page.innerHTML = "We encountered an error. Please try again later.";
+  const reload = document.createElement("a");
+  reload.href = "https://ramadantimer.com";
+  reload.style.color = "white";
+  reload.textContent = "Reload";
+  page.appendChild(document.createElement("br"));
+  page.appendChild(reload);
   currentTime.textContent = "--";
   countdown.classList.add("err-display");
-  countdown.innerHTML = "We encountered an error. Please try again later.";
 }
 $(document).mouseup((e) => {
   const container = $(".dropdown");

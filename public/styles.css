@@ -8,6 +8,7 @@ body {
   text-align: center;
   color: white;
   overflow-x: hidden;
+  background-color: rgba(109, 30, 30, 0.959);
 }
 :root {
   --sub-background: rgba(238, 238, 238, 0.1);
