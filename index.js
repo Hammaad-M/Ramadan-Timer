@@ -7,7 +7,7 @@ const ezlocalTime = require("ez-local-time");
 const tzlookup = require("tz-lookup");
 const nearbyCities = require("nearby-cities");
 const citiesOfClients = [];
-let totalVisits = 1350;
+let totalVisits = 11032;
 let visitsThisHour = 0;
 console.log(__dirname);
 app.use(express.static(path.join(__dirname, "public")));
