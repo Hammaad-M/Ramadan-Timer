@@ -114,9 +114,10 @@ async function getTimes(data) {
             data.ip,
           (response) => {
             if (response.success == false || !response) {
-              err = true;
+              // err = true;
               console.error("Invalid Response", response);
-              errorScreen(101);
+              // errorScreen(101);
+              resolve(null);
             } else {
               times = timesToArray(response);
               let city = response.settings.location.city;
@@ -137,6 +138,7 @@ async function getTimes(data) {
           (response) => {
             if (!response.success) {
               err = true;
+              errorScreen(101);
             } else {
               times = timesToArray(response);
               resolve(times);
