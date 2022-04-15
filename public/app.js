@@ -115,7 +115,8 @@ async function getTimes(data) {
           (response) => {
             if (response.success == false || !response) {
               err = true;
-              errorScreen();
+              console.error("Invalid Response", response);
+              errorScreen(101);
             } else {
               times = timesToArray(response);
               let city = response.settings.location.city;
@@ -166,7 +167,8 @@ async function getLocation() {
       const res = $.getJSON("https://ipapi.co/json/", (data) => {
         if (!data) {
           err = true;
-          errorScreen();
+          console.error("Invalid data value", data);
+          errorScreen(202);
         } else {
           resolve(data);
         }
@@ -284,7 +286,8 @@ async function getCustomCityTime(timezone) {
 
   if (res.status == 404) {
     err = true;
-    errorScreen();
+    console.error("Invalid response status", res);
+    errorScreen(303);
   } else {
     return new Date(res.dateTime).getTime();
   }
@@ -338,6 +341,7 @@ async function init(city) {
     // prayerTimes[0] is next Fajr time if next fajr is tommorow
     else fastDuration = prayerTimes[1] - todayFajrTime;
     initializing = false;
+    TIDs.forEach(clearInterval);
     update(times);
     TIDs.push(
       setInterval(() => {
@@ -347,7 +351,9 @@ async function init(city) {
   } else {
     initializing = false;
     allPrayerTimes.style.display = "none";
-    errorScreen();
+    console.error("Error flag was triggered. Abandoning setup.");
+    errorScreen(400);
+    TIDs.forEach(clearInterval);
     TIDs.push(
       setInterval(() => {
         adaptUI();
@@ -888,7 +894,7 @@ function toggleLoadingScreen() {
   }
   loaded = !loaded;
 }
-function errorScreen() {
+function errorScreen(code) {
   toggleLoadingScreen();
   const page = document.querySelector(".page");
   page.innerHTML = "We encountered an error. Please try again later.";
@@ -896,7 +902,11 @@ function errorScreen() {
   reload.href = "https://ramadantimer.com";
   reload.style.color = "white";
   reload.textContent = "Reload";
-  page.appendChild(document.createElement("br"));
+  const errCode = document.createElement("p");
+  errCode.textContent = `Error Code: ${code}`;
+  const br = document.createElement("br");
+  page.appendChild(br);
+  page.appendChild(errCode);
   page.appendChild(reload);
   currentTime.textContent = "--";
   countdown.classList.add("err-display");
