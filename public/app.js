@@ -130,6 +130,7 @@ const updateOffset = (change) => {
     } else {
       document.querySelector(".star-3").style.display = "none";
     }
+    star.style.display = "none";
   } else {
     // if fajr is next
 
