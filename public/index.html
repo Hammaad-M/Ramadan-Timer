@@ -1,65 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Ramadan Timer</title>
     <script
       src="https://code.jquery.com/jquery-3.6.0.min.js"
       integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
       crossorigin="anonymous"
     ></script>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body onload="init(null)">
-  <section class="loading">
-    <h1 class="loading">Fetching Data</h1>
-    <h2 class="loading">Please Wait</h2>
-  </section>
-  <section class="page">
-    <div class="subtitles">
-      <span id="location"></span><br>
-      <label for="current-time"><span id="date"></span><p class="subtitles" id="current-time" style="display: inline;"></p></label>
-    </div>
-    <p id="next-prayer-wrapper" class="subtitles" style="margin-top: 0">Time To <span class="next-prayer subtitles"></span>:</p>  
-    <div class="content">
-      <h1 id="countdown" class="time-remaining"></h1>
-      <p id="info" class="subtitles">
-        <span class="next-prayer"></span> Time: <span class="subtitles" id="prayer-time"></span>
-        <div class="resizable" id="all-prayer-times"></div> 
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body onload="init(null)">
+    <section class="loading">
+      <h1 class="loading">Fetching Data</h1>
+      <h2 class="loading">Please Wait</h2>
+    </section>
+    <section class="page">
+      <div class="subtitles">
+        <span id="location"></span><br />
+        <label for="current-time"
+          ><span id="date"></span>
+          <p class="subtitles" id="current-time" style="display: inline"></p
+        ></label>
+      </div>
+      <p id="next-prayer-wrapper" class="subtitles" style="margin-top: 0">
+        Time To <span class="next-prayer subtitles"></span>:
       </p>
-      <span id="progress-display"></span>
-      <div class="progress-container">
-        
-        <div class="progress-bar"></div>
-      </div>
-      <div class="location-form">
-        <label for="city" class="subtitles">City: </label>
-        <input class="user-input subtitles" type="text" name="city" id="city-input" placeholder="eg: Mumbai">
-      </div>
-      <button class="user-input hover-response" id="change-location" onclick="changeLocation()">Change Location</button>
-      <div class="dropdown">
-        <div id="options-wrapper"> 
-          <button id="find-me" onclick='init(null)' class="drop-down-buttons subtitles">Guess my Location</button>
-          <button id="geolocate-me" onclick='geoLocate(false)' class="drop-down-buttons subtitles">Geolocate Me</button>
+      <div class="content">
+        <div class="countdown-wrapper">
+          <h1 id="countdown" class="time-remaining"></h1>
         </div>
+        <div id="info" >
+          
+          <p class="subtitles">
+            <span class="next-prayer"></span> Time:
+            <span class="subtitles" id="prayer-time"></span>
+            <div class="resizable" id="all-prayer-times"></div>
+          </p>
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            stroke-width="0"
+            viewBox="0 0 1024 1024"
+            height="1em"
+            width="1em"
+            class="star"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"
+            ></path>
+          </svg>
+        </div>
+
+        <span id="progress-display"></span>
+        <div class="progress-container">
+          <div class="progress-bar"></div>
+        </div>
+        <div class="location-form">
+          <label for="city" class="subtitles">City: </label>
+          <input
+            class="user-input subtitles"
+            type="text"
+            name="city"
+            id="city-input"
+            placeholder="eg: Mumbai"
+          />
+        </div>
+        <button
+          class="user-input hover-response"
+          id="change-location"
+          onclick="changeLocation()"
+        >
+          Change Location
+        </button>
+
+        <div class="dropdown">
+          <div id="options-wrapper">
+            <button
+              id="find-me"
+              onclick="init(null)"
+              class="drop-down-buttons subtitles"
+            >
+              Guess my Location
+            </button>
+            <button
+              id="geolocate-me"
+              onclick="geoLocate(false)"
+              class="drop-down-buttons subtitles"
+            >
+              Geolocate Me
+            </button>
+          </div>
+        </div>
+
+        <p class="option-seperator">or</p>
+        <p class="subtitles customize">
+          <svg
+            stroke="currentColor"
+            fill="currentColor"
+            stroke-width="0"
+            viewBox="0 0 1024 1024"
+            height="1em"
+            width="1em"
+            class=""
+            style="margin-right: -2px;"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"
+            ></path>
+          </svg>
+          <span>Customize Countdown: </span>
+          
+          <button
+            class="change-countdown hover-response"
+            onclick="updateOffset(-1)"
+          >
+          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M5 11h14v2H5z"></path></g></svg>
+          </button>
+          <span class="offset-display">0</span>
+          <button
+            class="change-countdown hover-response"
+            onclick="updateOffset(1)"
+          >
+          <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><g><path fill="none" d="M0 0h24v24H0z"></path><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"></path></g></svg>
+          </button>
+          <button
+            class="change-countdown hover-response"
+            onclick="resetOffset()"
+          >
+            Reset
+          </button>
+        </p>
+        <br />
+
+        <section id="mobile-options-wrapper"></section>
       </div>
-      <br id="button-seperator">
-      <br>
-      <section id="mobile-options-wrapper"></section>
-    </div>
-    <div id="adhan-options" class="options resized resizable">
-      <p class="subtitles">Adhan Mode: </p>
-      <label class="subtitles" for="full-adhan">Full </label>
-      <input class="subtitles" type="radio" name="adhan-options" value="full-adhan" onchange="changeAdhanMode('full')"><br>
-      <label class="subtitles" for="short-adhan">Short </label>
-      <input class="subtitles" type="radio" name="adhan-options" value="short-adhan" onchange="changeAdhanMode('short')"><br>
-      <label class="subtitles" for="off-adhan">Off </label>
-      <input class="subtitles" type="radio" name="adhan-options" id="adhan-off" value="off-adhan" onchange="changeAdhanMode()">
-    </div>
-    <p class="subtitles reference">©<span id="current-year"></span> <a href="https://www.hammaadmemon.com">Hammaad Memon</a></p>
-  </section>
-  <script src="app.js"></script>
-</body>
+      <div id="adhan-options" class="options resized resizable">
+        <p class="subtitles">Adhan Mode:</p>
+        <label class="subtitles" for="full-adhan">Full </label>
+        <input
+          class="subtitles"
+          type="radio"
+          name="adhan-options"
+          value="full-adhan"
+          onchange="changeAdhanMode('full')"
+        /><br />
+        <label class="subtitles" for="short-adhan">Short </label>
+        <input
+          class="subtitles"
+          type="radio"
+          name="adhan-options"
+          value="short-adhan"
+          onchange="changeAdhanMode('short')"
+        /><br />
+        <label class="subtitles" for="off-adhan">Off </label>
+        <input
+          class="subtitles"
+          type="radio"
+          name="adhan-options"
+          id="adhan-off"
+          value="off-adhan"
+          onchange="changeAdhanMode()"
+        />
+      </div>
+      <p class="subtitles reference">
+        ©<span id="current-year"></span>
+        <a href="https://www.hammaadmemon.com">Hammaad Memon</a>
+      </p>
+    </section>
+    <script src="app.js"></script>
+  </body>
 </html>

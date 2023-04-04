@@ -24,6 +24,61 @@ input[type="radio"] {
 a {
   color: white;
 }
+.hidden {
+  display: none;
+}
+.customize {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  /* padding-top: 0.8rem; */
+}
+.change-countdown {
+  background-color: var(--sub-background);
+  border: 1px solid rgba(240, 233, 233, 0.152);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 0.25rem;
+  padding: 0.4rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-seperator {
+  padding-top: 0.4rem;
+  padding-bottom: 0.2rem;
+  position: relative;
+  opacity: 0.5;
+  color: white;
+  margin: 0 auto;
+}
+.countdown-wrapper {
+  display: flex;
+  align-items: center;
+}
+.countdown-wrapper #countdown {
+  flex: 1;
+}
+.star {
+  display: none;
+}
+#info {
+  display: flex;
+  width: max-content;
+  position: relative;
+  margin: auto !important;
+  align-items: center;
+  gap: 0.1rem;
+  padding-bottom: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+#info .subtitles {
+  margin: 0;
+}
 
 .progress-container {
   width: 90%;
@@ -64,7 +119,8 @@ a {
   padding: 8px 12px;
   background-color: var(--sub-background);
   color: white;
-  border: 1px solid white;
+  border: 1px solid rgba(240, 233, 233, 0.152);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   border-radius: 5px;
   font-size: 16px;
 }
@@ -296,10 +352,20 @@ a {
 #all-prayer-times span {
   float: right;
 }
+#all-prayer-times div {
+  padding-bottom: 6px;
+  position: relative;
+}
+#all-prayer-times .table-star {
+  position: absolute;
+  right: -1.2rem;
+  height: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
 #all-prayer-times p {
   background-color: var(--sub-background);
   margin: 0;
-  margin-bottom: 6px;
   padding: 10px;
   border-radius: 2px;
   font-size: clamp(0.5em, 1.1em, 1.6em);
