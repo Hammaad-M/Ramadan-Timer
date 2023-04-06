@@ -107,14 +107,23 @@ function addMillisecondsToTimeString(timeString, milliseconds) {
   const newHours = newHours24 % 12 || 12;
 
   // Combine the new hours, minutes, and AM/PM into a string and return it
-  const newTime = `${newHours}:${newMinutes
+  const newTime = `${Math.abs(newHours)}:${Math.abs(newMinutes)
     .toString()
     .padStart(2, "0")} ${newAmPm}`;
+  // console.log("adding", milliseconds / 60000, "to", timeString, "got", newTime)
+
   return newTime;
 }
 
 const updateOffset = (change) => {
+  if (change < 0 && remaining.minutes + (remaining.hours * 60) <= Math.abs(change)) return;
+  
+  // console.log(remaining.minutes, change, remaining.minutes < change);
   const milliseconds = change * 1000 * 60;
+  if (Math.abs((offset + milliseconds ) / 1000 / 60) > 240) {
+    alert("Offset too large")
+    return
+  } 
   offset += milliseconds;
   const offsetMinutes = offset / 1000 / 60;
   star.style.display = "block";
@@ -126,27 +135,29 @@ const updateOffset = (change) => {
   prayerTimeDisplay.textContent = newTime;
   if (offsetMinutes === 0) {
     if (nextPrayerIndex === 0) {
+      document.getElementById("prayer-time-0").textContent = newTime;
       document.querySelector(".star-0").style.display = "none";
     } else {
       document.querySelector(".star-3").style.display = "none";
+      document.getElementById("prayer-time-3").textContent = newTime;
     }
     star.style.display = "none";
   } else {
     // if fajr is next
-
     if (nextPrayerIndex === 0) {
-      document.getElementById("prayer-time-0").textContent = newTime;
       document.querySelector(".star-0").style.display = "block";
+      document.getElementById("prayer-time-0").textContent = newTime;
     } else {
-      document.getElementById("prayer-time-3").textContent = newTime;
       document.querySelector(".star-3").style.display = "block";
+      document.getElementById("prayer-time-3").textContent = newTime;
     }
   }
-
+  // localStorage.setItem(nextPrayerIndex, offset);
   // offsetDisplay.textContent = prayerTimeDisplay.textContent;
 };
 
 const resetOffset = () => {
+  
   const oldTime = addMillisecondsToTimeString(
     prayerTimeDisplay.textContent,
     offset * -1
@@ -167,6 +178,7 @@ const resetOffset = () => {
   } catch (err) {
     console.warn("error handling stars...", err);
   }
+  // localStorage.setItem(nextPrayerIndex, offset);
 };
 
 function setMidnight() {
@@ -279,6 +291,9 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 function updateProgressBar(total, progress) {
+  total = Math.abs(total);
+  progress = Math.abs(progress)
+  // console.log("total", total, "progress", progress, "/", progress / total, "1 - /", 1 - progress / total);
   if (nextPrayerIndex === 1) {
     const percentage = (progress / total) * 100;
     const displayPercentage = percentage.toFixed(2);
@@ -316,15 +331,25 @@ function update(times) {
     if (pauseCounter == 19) {
       $("#dua").remove();
     }
-    // console.log(prayerTimes[nextPrayerIndex]);;
-    remaining = msToTime(prayerTimes[nextPrayerIndex] - now + offset);
 
+    remaining = msToTime(prayerTimes[nextPrayerIndex] - now + offset);
     // console.log(fastDuration, prayerTimes[1] - now);
 
     updateProgressBar(
       fastDuration + offset,
       nextPrayerIndex === 1 ? now - todayFajrTime : now - yesterdayMaghrib
     );
+    // console.log(
+    //   "fasting for ",
+
+    //   msToTime(fastDuration + offset),
+    //   "fasted for",
+    //   msToTime(
+    //     nextPrayerIndex === 1 ? now - todayFajrTime : now - yesterdayMaghrib
+    //   ),
+    //   "next prayer",
+    //   nextPrayerIndex
+    // );
 
     if (remaining.minutes === lastMinutes && remaining.seconds > lastSeconds) {
       let params = customCity ? backup : null;
@@ -335,7 +360,7 @@ function update(times) {
       if (remaining.seconds == 0) {
         endCountdown();
         resetOffset();
-        if (nextPrayerIndex !== 0) {
+        if (nextPrayerIndex === 1) {
           yesterdayMaghrib = new Date();
         } else {
           todayFajrTime = new Date();
@@ -402,7 +427,10 @@ function resetContent() {
 }
 async function init(city) {
   resetContent();
-  resetOffset();
+  // let storedOffset = localStorage.getItem(nextPrayerIndex)
+  // if (storedOffset != null) {
+  //   offset =
+  // }
   toggleLoadingScreen();
   if (city != null && city == myCity) {
     city = null;
@@ -439,6 +467,8 @@ async function init(city) {
     }
     // prayerTimes[0] is next Fajr time if next fajr is tommorow
     else fastDuration = prayerTimes[1] - todayFajrTime;
+    resetOffset();
+
     initializing = false;
     TIDs.forEach(clearInterval);
     update(times);
