@@ -135,21 +135,21 @@ const updateOffset = (change) => {
   prayerTimeDisplay.textContent = newTime;
   if (offsetMinutes === 0) {
     if (nextPrayerIndex === 0) {
-      document.getElementById("prayer-time-0").textContent = newTime;
+      document.getElementById("prayer-time-0").textContent = newTime.toLowerCase();
       document.querySelector(".star-0").style.display = "none";
     } else {
       document.querySelector(".star-3").style.display = "none";
-      document.getElementById("prayer-time-3").textContent = newTime;
+      document.getElementById("prayer-time-3").textContent = newTime.toLowerCase();
     }
     star.style.display = "none";
   } else {
     // if fajr is next
     if (nextPrayerIndex === 0) {
       document.querySelector(".star-0").style.display = "block";
-      document.getElementById("prayer-time-0").textContent = newTime;
+      document.getElementById("prayer-time-0").textContent = newTime.toLowerCase();
     } else {
       document.querySelector(".star-3").style.display = "block";
-      document.getElementById("prayer-time-3").textContent = newTime;
+      document.getElementById("prayer-time-3").textContent = newTime.toLowerCase();
     }
   }
   // localStorage.setItem(nextPrayerIndex, offset);
