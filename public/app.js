@@ -169,10 +169,10 @@ const resetOffset = () => {
   offset = 0;
   try {
     if (nextPrayerIndex === 0) {
-      document.getElementById("prayer-time-0").textContent = oldTime;
+      document.getElementById("prayer-time-0").textContent = oldTime.toLowerCase();
       document.querySelector(".star-0").style.display = "none";
     } else {
-      document.getElementById("prayer-time-3").textContent = oldTime;
+      document.getElementById("prayer-time-3").textContent = oldTime.toLowerCase();
       document.querySelector(".star-3").style.display = "none";
     }
   } catch (err) {
