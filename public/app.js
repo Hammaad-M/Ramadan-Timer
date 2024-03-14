@@ -66,13 +66,7 @@ let midnight;
 let bgColor;
 let lastMinutes;
 let lastSeconds;
-let backup = {
-  name: "Seattle (WA) United States of America",
-  lat: 47.57000205,
-  lon: -122.339985,
-  timezone: "America/Los_Angeles",
-  city: "Seattle",
-};
+let backup = null;
 let lostFocus = false;
 let refresh = false;
 let first = true;
@@ -83,6 +77,11 @@ let todayFajrTime;
 let initializing = false;
 
 let offset = 0;
+
+const calcMethodDropdown = document.getElementById("calculation-method");
+let calcMethod = localStorage.getItem("calcMethod") || 2;
+
+calcMethodDropdown.value = calcMethod;
 
 function addMillisecondsToTimeString(timeString, milliseconds) {
   // Split the time string into hours, minutes, and AM/PM
@@ -110,20 +109,22 @@ function addMillisecondsToTimeString(timeString, milliseconds) {
   const newTime = `${Math.abs(newHours)}:${Math.abs(newMinutes)
     .toString()
     .padStart(2, "0")} ${newAmPm}`;
-  // console.log("adding", milliseconds / 60000, "to", timeString, "got", newTime)
 
   return newTime;
 }
 
 const updateOffset = (change) => {
-  if (change < 0 && remaining.minutes + (remaining.hours * 60) <= Math.abs(change)) return;
-  
-  // console.log(remaining.minutes, change, remaining.minutes < change);
+  if (
+    change < 0 &&
+    remaining.minutes + remaining.hours * 60 <= Math.abs(change)
+  )
+    return;
+
   const milliseconds = change * 1000 * 60;
-  if (Math.abs((offset + milliseconds ) / 1000 / 60) > 240) {
-    alert("Offset too large")
-    return
-  } 
+  if (Math.abs((offset + milliseconds) / 1000 / 60) > 240) {
+    alert("Offset too large");
+    return;
+  }
   offset += milliseconds;
   const offsetMinutes = offset / 1000 / 60;
   star.style.display = "block";
@@ -135,29 +136,30 @@ const updateOffset = (change) => {
   prayerTimeDisplay.textContent = newTime;
   if (offsetMinutes === 0) {
     if (nextPrayerIndex === 0) {
-      document.getElementById("prayer-time-0").textContent = newTime.toLowerCase();
+      document.getElementById("prayer-time-0").textContent =
+        newTime.toLowerCase();
       document.querySelector(".star-0").style.display = "none";
     } else {
       document.querySelector(".star-3").style.display = "none";
-      document.getElementById("prayer-time-3").textContent = newTime.toLowerCase();
+      document.getElementById("prayer-time-3").textContent =
+        newTime.toLowerCase();
     }
     star.style.display = "none";
   } else {
     // if fajr is next
     if (nextPrayerIndex === 0) {
       document.querySelector(".star-0").style.display = "block";
-      document.getElementById("prayer-time-0").textContent = newTime.toLowerCase();
+      document.getElementById("prayer-time-0").textContent =
+        newTime.toLowerCase();
     } else {
       document.querySelector(".star-3").style.display = "block";
-      document.getElementById("prayer-time-3").textContent = newTime.toLowerCase();
+      document.getElementById("prayer-time-3").textContent =
+        newTime.toLowerCase();
     }
   }
-  // localStorage.setItem(nextPrayerIndex, offset);
-  // offsetDisplay.textContent = prayerTimeDisplay.textContent;
 };
 
 const resetOffset = () => {
-  
   const oldTime = addMillisecondsToTimeString(
     prayerTimeDisplay.textContent,
     offset * -1
@@ -169,10 +171,12 @@ const resetOffset = () => {
   offset = 0;
   try {
     if (nextPrayerIndex === 0) {
-      document.getElementById("prayer-time-0").textContent = oldTime.toLowerCase();
+      document.getElementById("prayer-time-0").textContent =
+        oldTime.toLowerCase();
       document.querySelector(".star-0").style.display = "none";
     } else {
-      document.getElementById("prayer-time-3").textContent = oldTime.toLowerCase();
+      document.getElementById("prayer-time-3").textContent =
+        oldTime.toLowerCase();
       document.querySelector(".star-3").style.display = "none";
     }
   } catch (err) {
@@ -211,7 +215,9 @@ async function getTimes(data) {
     if (useIP) {
       await jQuery(async ($) => {
         $.getJSON(
-          "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" +
+          "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+            calcMethod +
+            "&user_ip=" +
             data.ip,
           (response) => {
             if (response.success == false || !response) {
@@ -230,7 +236,9 @@ async function getTimes(data) {
     } else {
       await jQuery(async ($) => {
         $.getJSON(
-          "https://www.islamicfinder.us/index.php/api/prayer_times?latitude=" +
+          "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+            calcMethod +
+            "&latitude=" +
             data.lat +
             "&longitude=" +
             data.lon +
@@ -292,8 +300,7 @@ document.addEventListener("visibilitychange", () => {
 });
 function updateProgressBar(total, progress) {
   total = Math.abs(total);
-  progress = Math.abs(progress)
-  // console.log("total", total, "progress", progress, "/", progress / total, "1 - /", 1 - progress / total);
+  progress = Math.abs(progress);
   if (nextPrayerIndex === 1) {
     const percentage = (progress / total) * 100;
     const displayPercentage = percentage.toFixed(2);
@@ -311,6 +318,7 @@ function updateProgressBar(total, progress) {
   }
 }
 function update(times) {
+  // alert(unix);
   if (!customCity) {
     now = new Date();
   } else {
@@ -333,23 +341,12 @@ function update(times) {
     }
 
     remaining = msToTime(prayerTimes[nextPrayerIndex] - now + offset);
-    // console.log(fastDuration, prayerTimes[1] - now);
+    //alert(unix);
 
     updateProgressBar(
       fastDuration + offset,
       nextPrayerIndex === 1 ? now - todayFajrTime : now - yesterdayMaghrib
     );
-    // console.log(
-    //   "fasting for ",
-
-    //   msToTime(fastDuration + offset),
-    //   "fasted for",
-    //   msToTime(
-    //     nextPrayerIndex === 1 ? now - todayFajrTime : now - yesterdayMaghrib
-    //   ),
-    //   "next prayer",
-    //   nextPrayerIndex
-    // );
 
     if (remaining.minutes === lastMinutes && remaining.seconds > lastSeconds) {
       let params = customCity ? backup : null;
@@ -398,6 +395,7 @@ function updateCountdown(remaining) {
   )}:${format(remaining.seconds)}`;
 }
 async function getCustomCityTime(timezone) {
+  //console.log(timezone);
   const response = await fetch("/customCityTime", {
     method: "GET",
     headers: {
@@ -427,10 +425,6 @@ function resetContent() {
 }
 async function init(city) {
   resetContent();
-  // let storedOffset = localStorage.getItem(nextPrayerIndex)
-  // if (storedOffset != null) {
-  //   offset =
-  // }
   toggleLoadingScreen();
   if (city != null && city == myCity) {
     city = null;
@@ -450,6 +444,7 @@ async function init(city) {
   let times = user.times;
   resetChangeLocation();
   toggleLoadingScreen();
+
   if (!err) {
     await finalSetup(
       times,
@@ -457,7 +452,6 @@ async function init(city) {
       queryData,
       city == null && first ? true : false
     );
-
     document.getElementById("current-year").textContent = now.getFullYear();
     // set fast duration
     if (nextPrayerIndex === 0) {
@@ -506,6 +500,7 @@ async function finalSetup(times, location, queryData, newUser) {
   };
   await asyncForEach();
   fajrTommorow = false;
+
   if (nextFajrTime.indexOf("*") != -1) {
     nextFajrTime = nextFajrTime.replace("*", "");
     fajrTommorow = true;
@@ -580,6 +575,7 @@ async function getUserData() {
     useIP = true;
     const data = await getTimes(queryData);
     location = data.city;
+
     times = data.times;
     if (myCity === null) {
       myCity = location.toLowerCase();
@@ -603,6 +599,7 @@ async function setCustomLocation(city) {
     now = new Date(unix);
   }
   customCity = true;
+
   return { location: city.city, times: times, queryData: queryData };
 }
 function geoLocate(reload) {
@@ -672,11 +669,15 @@ function getNextPrayerTime(date, data) {
   let dateString =
     date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
   let query = useIP
-    ? "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" +
+    ? "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+      calcMethod +
+      "&user_ip=" +
       data.ip +
       "&date=" +
       dateString
-    : "https://www.islamicfinder.us/index.php/api/prayer_times?latitude=" +
+    : "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+      calcMethod +
+      "&latitude=" +
       data.lat +
       "&longitude=" +
       data.lon +
@@ -698,6 +699,7 @@ function getNextPrayerTime(date, data) {
           );
           date.setHours(hours);
           date.setMinutes(minutes);
+          //alert(JSON.stringify({ date: date, time: "*" + string }));
           resolve({ date: date, time: "*" + string });
         }
       });
@@ -831,6 +833,14 @@ function changeLocation() {
   changeLocationButton.onclick = searchForLocation;
   $(".dropdown").show();
   $("#options-wrapper").show();
+}
+function changeCalculationMethod() {
+  calcMethod = calcMethodDropdown.value;
+  // save calcMethod to localStorage
+  localStorage.setItem("calcMethod", calcMethod);
+
+  if (customCity) newInit(backup);
+  else newInit(null);
 }
 async function searchForLocation() {
   const city = locationInput.value;

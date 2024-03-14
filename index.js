@@ -25,10 +25,19 @@ app.post("/client", (request, response) => {
   response.json({ status: "success" });
 });
 app.get("/customCityTime", async (req, res) => {
-  const dateObject = ezlocalTime(req.get("timezone"));
+  const tz = req.get("timezone");
+  if (!tz || tz == "" || tz == undefined) {
+    res.json({
+      status: 400, // bad request
+      message: "Please provide a timezone",
+    });
+  }
+  const dateObject = ezlocalTime(tz);
+
   res.json({
     status: 200,
-    dateTime: dateObject.date + dateObject.time,
+    //dateTime: dateObject.date + dateObject.time,
+    dateTime: dateObject.dateTime,
   });
 });
 app.get("/geoData", async (req, res) => {

@@ -98,7 +98,7 @@
             </button>
           </div>
         </div>
-
+       
         <p class="option-seperator">or</p>
         <p class="subtitles customize">
           <svg
@@ -171,10 +171,35 @@
           onchange="changeAdhanMode()"
         />
       </div>
-      <p class="subtitles reference">
+      <div class="subtitles reference ">
+        <div id = "calculation-method-wrapper" >
+          Calculation Method:
+        <select id="calculation-method" class="subtitles" onchange="changeCalculationMethod()">
+          <option class="user-input"value="0">Jafari - Ithna Ashari</option>
+          <option class="user-input"value="1">Karachi - University of Islamic Sciences</option>
+          <option class="user-input"value="2">ISNA - Islamic Society of North America (Default)</option>
+          <option class="user-input"value="3">MWL - Muslim World League</option>
+          <option class="user-input"value="4">Mecca - Umm al-Qura</option>
+          <option class="user-input"value="5">Egyptian General Authority of Survey</option>
+          <option class="user-input"value="7">University of Tehran - Institute of Geophysics</option>
+          <option class="user-input"value="8">Algerian Minister of Religious Affairs and Wakfs</option>
+          <option class="user-input"value="9">Gulf 90 Minutes Fixed Isha</option>
+          <option class="user-input"value="10">Egyptian General Authority of Survey (Bis)</option>
+          <option class="user-input"value="11">UOIF - Union Des Organisations Islamiques De France.</option>
+          <option class="user-input"value="12">Sistem Informasi Hisab Rukyat Indonesia</option>
+          <option class="user-input"value="13">Diyanet İşleri Başkanlığı</option>
+          <option class="user-input"value="14">Germany Custom</option>
+          <option class="user-input"value="15">Russia Custom</option>
+        </select>
+      </div>
+      <p class="subtitles ">
         ©<span id="current-year"></span>
         <a href="https://www.hammaadmemon.com">Hammaad Memon</a>
       </p>
+      </div>
+
+      </div>
+      
     </section>
     <script src="app.js"></script>
   </body>
