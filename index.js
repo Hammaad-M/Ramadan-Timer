@@ -33,7 +33,7 @@ app.get("/customCityTime", async (req, res) => {
   //   });
   // }
   const dateObject = ezlocalTime(tz);
-  console.log(dateObject);
+  // console.log(dateObject.dateTime.getHours());
   res.json({
     status: 200,
     //dateTime: dateObject.date + dateObject.time,

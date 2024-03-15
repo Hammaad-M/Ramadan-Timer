@@ -410,7 +410,9 @@ async function getCustomCityTime(timezone) {
     console.error("Invalid response status", res);
     errorScreen(303);
   } else {
-    return new Date(res.dateTime).getTime();
+    return new Date(
+      res.dateTime.substring(0, res.dateTime.length - 1)
+    ).getTime();
   }
 }
 function resetContent() {
