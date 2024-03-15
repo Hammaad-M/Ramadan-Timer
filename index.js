@@ -26,12 +26,12 @@ app.post("/client", (request, response) => {
 });
 app.get("/customCityTime", async (req, res) => {
   const tz = req.get("timezone");
-  if (!tz || tz == "" || tz == undefined) {
-    res.json({
-      status: 400, // bad request
-      message: "Please provide a timezone",
-    });
-  }
+  // if (!tz || tz == "" || tz == undefined) {
+  //   res.json({
+  //     status: 400, // bad request
+  //     message: "Please provide a timezone",
+  //   });
+  // }
   const dateObject = ezlocalTime(tz);
   console.log(dateObject);
   res.json({
