@@ -33,7 +33,7 @@ app.get("/customCityTime", async (req, res) => {
     });
   }
   const dateObject = ezlocalTime(tz);
-
+  if (totalVisits < 10) console.log(dateObject);
   res.json({
     status: 200,
     //dateTime: dateObject.date + dateObject.time,
