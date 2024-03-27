@@ -14,7 +14,12 @@ const adhanOptions = document.getElementById("adhan-options");
 const dateDisplay = document.getElementById("date");
 const errorDisplay = document.getElementById("error-display");
 
+const progressBar = document.querySelector(".progress-bar");
+const progressDisplay = document.querySelector("#progress-display");
+const star = document.querySelector(".star");
+const offsetDisplay = document.querySelector(".offset-display");
 document.getElementById("adhan-off").checked = true;
+let TIDs = [];
 const days = [
   "Sunday",
   "Monday",
@@ -60,28 +65,128 @@ let alertEffect = false;
 let err = false;
 let loaded = false;
 let midnight;
-let TIDs = [];
 let bgColor;
 let lastMinutes;
 let lastSeconds;
-let backup = {
-  name: "Seattle (WA) United States of America",
-  lat: 47.57000205,
-  lon: -122.339985,
-  timezone: "America/Los_Angeles",
-  city: "Seattle",
-};
+let backup = null;
 let lostFocus = false;
 let refresh = false;
 let first = true;
 let lastInit;
 let useIP;
-// let t = 4;
-const stopIntervals = () => {
-  TIDs.forEach((TID) => clearInterval(TID));
-  console.log("cleared TIDs:", TIDs); // dev
-  TIDs = [];
+let fastDuration;
+let todayFajrTime;
+let initializing = false;
+
+let offset = 0;
+
+const calcMethodDropdown = document.getElementById("calculation-method");
+let calcMethod = localStorage.getItem("calcMethod") || 2;
+
+calcMethodDropdown.value = calcMethod;
+
+function addMillisecondsToTimeString(timeString, milliseconds) {
+  // Split the time string into hours, minutes, and AM/PM
+  const [time, ampm] = timeString.split(" ");
+  const [hours, minutes] = time.split(":").map((str) => parseInt(str, 10));
+
+  // Convert the hours to 24-hour format
+  let hours24 = hours;
+  if (ampm === "PM" && hours !== 12) {
+    hours24 += 12;
+  } else if (ampm === "AM" && hours === 12) {
+    hours24 = 0;
+  }
+
+  // Calculate the total number of milliseconds since midnight
+  const totalMilliseconds = (hours24 * 60 + minutes) * 60 * 1000 + milliseconds;
+
+  // Convert the total milliseconds back to hours, minutes, and AM/PM
+  const newHours24 = Math.floor(totalMilliseconds / (60 * 60 * 1000)) % 24;
+  const newMinutes = Math.floor(totalMilliseconds / (60 * 1000)) % 60;
+  const newAmPm = newHours24 < 12 ? "AM" : "PM";
+  const newHours = newHours24 % 12 || 12;
+
+  // Combine the new hours, minutes, and AM/PM into a string and return it
+  const newTime = `${Math.abs(newHours)}:${Math.abs(newMinutes)
+    .toString()
+    .padStart(2, "0")} ${newAmPm}`;
+
+  return newTime;
+}
+
+const updateOffset = (change) => {
+  if (
+    change < 0 &&
+    remaining.minutes + remaining.hours * 60 <= Math.abs(change)
+  )
+    return;
+
+  const milliseconds = change * 1000 * 60;
+  if (Math.abs((offset + milliseconds) / 1000 / 60) > 240) {
+    alert("Offset too large");
+    return;
+  }
+  offset += milliseconds;
+  const offsetMinutes = offset / 1000 / 60;
+  star.style.display = "block";
+  offsetDisplay.textContent = offsetMinutes;
+  const newTime = addMillisecondsToTimeString(
+    prayerTimeDisplay.textContent,
+    milliseconds
+  );
+  prayerTimeDisplay.textContent = newTime;
+  if (offsetMinutes === 0) {
+    if (nextPrayerIndex === 0) {
+      document.getElementById("prayer-time-0").textContent =
+        newTime.toLowerCase();
+      document.querySelector(".star-0").style.display = "none";
+    } else {
+      document.querySelector(".star-3").style.display = "none";
+      document.getElementById("prayer-time-3").textContent =
+        newTime.toLowerCase();
+    }
+    star.style.display = "none";
+  } else {
+    // if fajr is next
+    if (nextPrayerIndex === 0) {
+      document.querySelector(".star-0").style.display = "block";
+      document.getElementById("prayer-time-0").textContent =
+        newTime.toLowerCase();
+    } else {
+      document.querySelector(".star-3").style.display = "block";
+      document.getElementById("prayer-time-3").textContent =
+        newTime.toLowerCase();
+    }
+  }
 };
+
+const resetOffset = () => {
+  const oldTime = addMillisecondsToTimeString(
+    prayerTimeDisplay.textContent,
+    offset * -1
+  );
+  prayerTimeDisplay.textContent = oldTime;
+  // offsetDisplay.textContent = prayerTimeDisplay.textContent;
+  star.style.display = "none";
+  offsetDisplay.textContent = 0;
+  offset = 0;
+  try {
+    if (nextPrayerIndex === 0) {
+      document.getElementById("prayer-time-0").textContent =
+        oldTime.toLowerCase();
+      document.querySelector(".star-0").style.display = "none";
+    } else {
+      document.getElementById("prayer-time-3").textContent =
+        oldTime.toLowerCase();
+      document.querySelector(".star-3").style.display = "none";
+    }
+  } catch (err) {
+    console.warn("error handling stars...", err);
+  }
+  // localStorage.setItem(nextPrayerIndex, offset);
+};
+
 function setMidnight() {
   midnight = new Date(
     now.getFullYear(),
@@ -93,8 +198,13 @@ function setMidnight() {
   );
 }
 function newInit(params) {
-  console.log("new init"); // dev
-  stopIntervals();
+  // return if an initialization call has already been made
+  if (initializing) {
+    return;
+  }
+
+  initializing = true;
+  TIDs.forEach((TID) => clearInterval(TID));
   init(params);
 }
 async function getTimes(data) {
@@ -107,12 +217,17 @@ async function getTimes(data) {
     if (useIP) {
       await jQuery(async ($) => {
         $.getJSON(
-          "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" +
+          "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+            calcMethod +
+            "&user_ip=" +
             data.ip,
           (response) => {
             console.log(response);
             if (response.success == false || !response) {
-              err = true;
+              // err = true;
+              console.error("Invalid Response", response);
+              // errorScreen(101);
+              resolve(null);
             } else {
               times = timesToArray(response);
               let city = response.settings.location.city;
@@ -128,7 +243,9 @@ async function getTimes(data) {
     } else {
       await jQuery(async ($) => {
         $.getJSON(
-          "https://www.islamicfinder.us/index.php/api/prayer_times?latitude=" +
+          "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+            calcMethod +
+            "&latitude=" +
             data.lat +
             "&longitude=" +
             data.lon +
@@ -137,6 +254,7 @@ async function getTimes(data) {
           (response) => {
             if (!response.success) {
               err = true;
+              errorScreen(101);
             } else {
               times = timesToArray(response);
               resolve(times);
@@ -167,6 +285,8 @@ async function getLocation() {
       const res = $.getJSON("https://ipapi.co/json/", (data) => {
         if (!data) {
           err = true;
+          console.error("Invalid data value", data);
+          errorScreen(202);
         } else {
           resolve(data);
         }
@@ -185,7 +305,27 @@ document.addEventListener("visibilitychange", () => {
     lostFocus = true;
   }
 });
+function updateProgressBar(total, progress) {
+  total = Math.abs(total);
+  progress = Math.abs(progress);
+  if (nextPrayerIndex === 1) {
+    const percentage = (progress / total) * 100;
+    const displayPercentage = percentage.toFixed(2);
+
+    progressBar.style.width = percentage + "%";
+    progressDisplay.textContent =
+      "Fasting Time: " + displayPercentage + "% Completed";
+  } else {
+    const percentage = (1 - progress / total) * 100;
+    progressBar.style.width = percentage + "%";
+    const displayPercentage = percentage.toFixed(2);
+
+    progressDisplay.textContent =
+      "Eating Time: " + displayPercentage + "% Remaining";
+  }
+}
 function update(times) {
+  // alert(unix);
   if (!customCity) {
     now = new Date();
   } else {
@@ -205,18 +345,17 @@ function update(times) {
   if (pauseCounter > 18 || nextPrayerIndex === 1) {
     if (pauseCounter == 19) {
       $("#dua").remove();
-      eraseAlertEffects();
     }
-    remaining = msToTime(prayerTimes[nextPrayerIndex] - now);
-    /*
-    // test
-    remaining.hours = 0;
-    remaining.minutes = 0;
-    remaining.seconds = t;
-    t -= 1;
-    */
+
+    remaining = msToTime(prayerTimes[nextPrayerIndex] - now + offset);
+    //alert(unix);
+
+    updateProgressBar(
+      fastDuration + offset,
+      nextPrayerIndex === 1 ? now - todayFajrTime : now - yesterdayMaghrib
+    );
+
     if (remaining.minutes === lastMinutes && remaining.seconds > lastSeconds) {
-      console.log("counter going up");
       let params = customCity ? backup : null;
       newInit(params);
       return;
@@ -224,6 +363,12 @@ function update(times) {
     if (remaining.hours == 0 && remaining.minutes == 0) {
       if (remaining.seconds == 0) {
         endCountdown();
+        resetOffset();
+        if (nextPrayerIndex === 1) {
+          yesterdayMaghrib = new Date();
+        } else {
+          todayFajrTime = new Date();
+        }
         setNextPrayer(false, times);
       } else {
         createAlertEffects(remaining.seconds);
@@ -247,6 +392,9 @@ function update(times) {
   }
   lastMinutes = remaining.minutes;
   lastSeconds = remaining.seconds;
+  // if (nextPrayerIndex < 0 || nextPrayerIndex > 1) {
+  //   newInit(params);
+  // }
 }
 function updateCountdown(remaining) {
   countdown.textContent = `${format(remaining.hours)}:${format(
@@ -254,6 +402,7 @@ function updateCountdown(remaining) {
   )}:${format(remaining.seconds)}`;
 }
 async function getCustomCityTime(timezone) {
+  //console.log(timezone);
   const response = await fetch("/customCityTime", {
     method: "GET",
     headers: {
@@ -262,14 +411,19 @@ async function getCustomCityTime(timezone) {
     },
   });
   const res = await response.json();
+
   if (res.status == 404) {
     err = true;
+    console.error("Invalid response status", res);
+    errorScreen(303);
   } else {
-    return new Date(res.dateTime).getTime();
+    return new Date(
+      res.dateTime.substring(0, res.dateTime.length - 1)
+    ).getTime();
   }
 }
 function resetContent() {
-  stopIntervals();
+  TIDs.forEach((TID) => clearInterval(TID));
   addHoverEffect("find-me");
   addHoverEffect("geolocate-me");
   $(".dropdown").hide();
@@ -288,6 +442,7 @@ async function init(city) {
   if (city === null) {
     user = await getUserData();
     if (user === null) {
+      newInit(backup);
       return;
     }
   } else {
@@ -298,6 +453,7 @@ async function init(city) {
   let times = user.times;
   resetChangeLocation();
   toggleLoadingScreen();
+
   if (!err) {
     await finalSetup(
       times,
@@ -305,6 +461,19 @@ async function init(city) {
       queryData,
       city == null && first ? true : false
     );
+    document.getElementById("current-year").textContent = now.getFullYear();
+    // set fast duration
+    if (nextPrayerIndex === 0) {
+      fastDuration = fajrTommorow
+        ? prayerTimes[0] - prayerTimes[1]
+        : prayerTimes[0] - yesterdayMaghrib;
+    }
+    // prayerTimes[0] is next Fajr time if next fajr is tommorow
+    else fastDuration = prayerTimes[1] - todayFajrTime;
+    resetOffset();
+
+    initializing = false;
+    TIDs.forEach(clearInterval);
     update(times);
     TIDs.push(
       setInterval(() => {
@@ -312,8 +481,11 @@ async function init(city) {
       }, 1000)
     );
   } else {
+    initializing = false;
     allPrayerTimes.style.display = "none";
-    errorScreen();
+    console.error("Error flag was triggered. Abandoning setup.");
+    errorScreen(400);
+    TIDs.forEach(clearInterval);
     TIDs.push(
       setInterval(() => {
         adaptUI();
@@ -337,10 +509,29 @@ async function finalSetup(times, location, queryData, newUser) {
   };
   await asyncForEach();
   fajrTommorow = false;
+
   if (nextFajrTime.indexOf("*") != -1) {
     nextFajrTime = nextFajrTime.replace("*", "");
     fajrTommorow = true;
   }
+  todayFajrTime = to24hrTime(times[0]);
+  const today = [now.getFullYear(), now.getMonth(), now.getDate()];
+  todayFajrTime = new Date(
+    ...today,
+    todayFajrTime.substr(0, todayFajrTime.indexOf(":")),
+    todayFajrTime.substr(todayFajrTime.indexOf(":") + 1),
+    0,
+    0
+  );
+  yesterdayMaghrib = to24hrTime(times[3]);
+  yesterdayMaghrib = new Date(
+    ...today.slice(0, 2),
+    now.getHours() > 12 ? today[2] : today[2] - 1,
+    yesterdayMaghrib.substr(0, yesterdayMaghrib.indexOf(":")),
+    yesterdayMaghrib.substr(yesterdayMaghrib.indexOf(":") + 1),
+    0,
+    0
+  );
   displayAllPrayerTimes(times);
   times = [times[0], times[3]];
   location = location.substr(0, 1).toUpperCase() + location.substring(1);
@@ -361,8 +552,12 @@ async function finalSetup(times, location, queryData, newUser) {
   setMidnight();
 }
 async function getUserData() {
+  let location;
+  let queryData;
+  let times;
+
   const handleError = async () => {
-    console.log(err);
+    console.error(err);
     if (
       window.confirm(
         "Unable to guess your location...would you like to geolocate?"
@@ -372,13 +567,13 @@ async function getUserData() {
       return null;
     } else {
       queryData = backup;
+      useIP = false;
       times = await getTimes(backup);
       location = "Seattle";
+      toggleLoadingScreen();
     }
   };
-  let location;
-  let queryData;
-  let times;
+
   try {
     location = await getLocation();
     if (location === null) {
@@ -389,6 +584,7 @@ async function getUserData() {
     useIP = true;
     const data = await getTimes(queryData);
     location = data.city;
+
     times = data.times;
     if (myCity === null) {
       myCity = location.toLowerCase();
@@ -412,6 +608,7 @@ async function setCustomLocation(city) {
     now = new Date(unix);
   }
   customCity = true;
+
   return { location: city.city, times: times, queryData: queryData };
 }
 function geoLocate(reload) {
@@ -447,7 +644,6 @@ function geoLocate(reload) {
         });
       },
       (err) => {
-        // alert(`ERROR(${err.code}): ${err.message}`);
         if (err.code === 1) {
           alert(
             "You have disabled geolocation...please enter your location manually."
@@ -482,11 +678,15 @@ function getNextPrayerTime(date, data) {
   let dateString =
     date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
   let query = useIP
-    ? "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" +
+    ? "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+      calcMethod +
+      "&user_ip=" +
       data.ip +
       "&date=" +
       dateString
-    : "https://www.islamicfinder.us/index.php/api/prayer_times?latitude=" +
+    : "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
+      calcMethod +
+      "&latitude=" +
       data.lat +
       "&longitude=" +
       data.lon +
@@ -508,6 +708,7 @@ function getNextPrayerTime(date, data) {
           );
           date.setHours(hours);
           date.setMinutes(minutes);
+          //alert(JSON.stringify({ date: date, time: "*" + string }));
           resolve({ date: date, time: "*" + string });
         }
       });
@@ -539,7 +740,9 @@ function charCount(str, letter) {
   return letterCount;
 }
 function msToTime(ms) {
+  // console.log(ms);
   ms = Math.abs(ms);
+  // console.log(ms);
   let seconds = ms / 1000;
   let minutes = seconds / 60;
   let hours = minutes / 60;
@@ -580,8 +783,10 @@ function setNextPrayer(first, times) {
   }
   if (nextPrayerIndex === 0) {
     bgColor = "rgba(40, 73, 10, 0.925)";
+    changeFavicon("./green.png");
   } else {
     bgColor = "rgba(109, 30, 30, 0.959)";
+    changeFavicon("./red.png");
   }
   document.body.style.backgroundColor = bgColor;
   nextPrayerDisplays.forEach((display) => {
@@ -591,6 +796,7 @@ function setNextPrayer(first, times) {
   let time =
     fajrTommorow && nextPrayerIndex == 0 ? nextFajrTime : times[getIndex()];
   prayerTimeDisplay.textContent = to12hrDisplayTime(time).toUpperCase();
+  // offsetDisplay.textContent = prayerTimeDisplay.textContent;
 }
 function format(string) {
   if (string < 10) {
@@ -636,6 +842,14 @@ function changeLocation() {
   changeLocationButton.onclick = searchForLocation;
   $(".dropdown").show();
   $("#options-wrapper").show();
+}
+function changeCalculationMethod() {
+  calcMethod = calcMethodDropdown.value;
+  // save calcMethod to localStorage
+  localStorage.setItem("calcMethod", calcMethod);
+
+  if (customCity) newInit(backup);
+  else newInit(null);
 }
 async function searchForLocation() {
   const city = locationInput.value;
@@ -700,9 +914,24 @@ function displayAllPrayerTimes(times) {
   document.getElementById("all-prayer-times").innerHTML = "";
   times.forEach((time, i) => {
     $("#all-prayer-times").append(
-      `<div><p>${prayerList[i]}: &#8287&#8287&#8287 <span>${to12hrDisplayTime(
+      `<div><p>${
+        prayerList[i]
+      }: &#8287&#8287&#8287 <span id="prayer-time-${i}">${to12hrDisplayTime(
         time
-      )}</span></p></div>`
+      )}</span></p><svg
+      stroke="currentColor"
+      fill="currentColor"
+      stroke-width="0"
+      viewBox="0 0 1024 1024"
+      height="1em"
+      width="1em"
+      class="hidden table-star star-${i}"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M908.1 353.1l-253.9-36.9L540.7 86.1c-3.1-6.3-8.2-11.4-14.5-14.5-15.8-7.8-35-1.3-42.9 14.5L369.8 316.2l-253.9 36.9c-7 1-13.4 4.3-18.3 9.3a32.05 32.05 0 0 0 .6 45.3l183.7 179.1-43.4 252.9a31.95 31.95 0 0 0 46.4 33.7L512 754l227.1 119.4c6.2 3.3 13.4 4.4 20.3 3.2 17.4-3 29.1-19.5 26.1-36.9l-43.4-252.9 183.7-179.1c5-4.9 8.3-11.3 9.3-18.3 2.7-17.5-9.5-33.7-27-36.3z"
+      ></path>
+    </svg></div>`
     );
   });
 }
@@ -748,6 +977,7 @@ async function endCountdown() {
       console.log(err);
     }
   }
+  eraseAlertEffects(0);
 }
 function createAlertEffects(s) {
   if (s % 2 == 0) {
@@ -763,7 +993,7 @@ function createAlertEffects(s) {
   }
 }
 function eraseAlertEffects() {
-  countdown.style.textShadow = "initial";
+  countdown.style.textShadow = "none";
   countdown.style.color = "white";
 }
 function adaptUI() {
@@ -808,8 +1038,8 @@ function flexPrayerTimes(flex) {
     $("#all-prayer-times").css({
       display: "flex",
       "flex-direction": "row",
+      gap: "5px",
     });
-    $("#all-prayer-times").children().css("margin-right", "5px");
   } else {
     $("#all-prayer-times").css({
       display: "block",
@@ -830,11 +1060,22 @@ function toggleLoadingScreen() {
   }
   loaded = !loaded;
 }
-function errorScreen() {
+function errorScreen(code) {
   toggleLoadingScreen();
+  const page = document.querySelector(".page");
+  page.innerHTML = "We encountered an error. Please try again later.";
+  const reload = document.createElement("a");
+  reload.href = "https://ramadantimer.com";
+  reload.style.color = "white";
+  reload.textContent = "Reload";
+  const errCode = document.createElement("p");
+  errCode.textContent = `Error Code: ${code}`;
+  const br = document.createElement("br");
+  page.appendChild(br);
+  page.appendChild(errCode);
+  page.appendChild(reload);
   currentTime.textContent = "--";
   countdown.classList.add("err-display");
-  countdown.innerHTML = "We encountered an error. Please try again later.";
 }
 $(document).mouseup((e) => {
   const container = $(".dropdown");
@@ -843,3 +1084,16 @@ $(document).mouseup((e) => {
     container.hide();
   }
 });
+
+document.head = document.head || document.getElementsByTagName("head")[0];
+function changeFavicon(src) {
+  const link = document.createElement("link");
+  const oldLink = document.getElementById("dynamic-favicon");
+  link.id = "dynamic-favicon";
+  link.rel = "shortcut icon";
+  link.href = src;
+  if (oldLink) {
+    document.head.removeChild(oldLink);
+  }
+  document.head.appendChild(link);
+}

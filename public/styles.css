@@ -8,6 +8,7 @@ body {
   text-align: center;
   color: white;
   overflow-x: hidden;
+  background-color: rgba(109, 30, 30, 0.959);
 }
 :root {
   --sub-background: rgba(238, 238, 238, 0.1);
@@ -23,6 +24,89 @@ input[type="radio"] {
 a {
   color: white;
 }
+.hidden {
+  display: none;
+}
+.customize {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  /* padding-top: 0.8rem; */
+}
+.change-countdown {
+  background-color: var(--sub-background);
+  border: 1px solid rgba(240, 233, 233, 0.152);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 0.25rem;
+  padding: 0.4rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-seperator {
+  padding-top: 0.4rem;
+  padding-bottom: 0.2rem;
+  position: relative;
+  opacity: 0.5;
+  color: white;
+  margin: 0 auto;
+}
+.countdown-wrapper {
+  display: flex;
+  align-items: center;
+}
+.countdown-wrapper #countdown {
+  flex: 1;
+}
+.star {
+  display: none;
+}
+#info {
+  display: flex;
+  width: max-content;
+  position: relative;
+  margin: auto !important;
+  align-items: center;
+  gap: 0.1rem;
+  padding-bottom: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+#info .subtitles {
+  margin: 0;
+}
+
+.progress-container {
+  width: 90%;
+  border-radius: 15px;
+  background-color: var(--sub-background);
+  position: relative;
+  margin: 20px auto;
+  margin-top: 2px;
+}
+.progress-display {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  padding: 2px;
+  padding-bottom: 0;
+  margin-bottom: 5px;
+  background-color: var(--sub-background);
+}
+.progress-bar {
+  width: 50%;
+  border-radius: 5px;
+  height: 100%;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  background-color: white;
+  box-shadow: 0px 0px 3px whitesmoke;
+}
+
 .content {
   width: 100%;
 }
@@ -32,17 +116,20 @@ a {
   float: center;
 }
 #change-location {
-  padding: 8px 10px;
+  padding: 8px 12px;
   background-color: var(--sub-background);
   color: white;
-  border: 1px solid white;
-  border-radius: 4px;
+  border: 1px solid rgba(240, 233, 233, 0.152);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 5px;
   font-size: 16px;
 }
 .location-form input {
   padding: 5px;
   width: 40%;
   max-width: 12em;
+  width: var(--sub-background) !important;
+  border: 1px solid white !important;
 }
 .user-input {
   border-radius: 5px;
@@ -94,7 +181,6 @@ a {
   color: black !important;
   border: 1px solid black !important;
   border-radius: 5px !important;
-  padding: 8px 10px !important;
 }
 #countdown {
   font-family: "Ubuntu Mono", sans-serif;
@@ -171,7 +257,7 @@ a {
     font-size: 16px;
   }
   .subtitles {
-    font-size: 20px;
+    font-size: 18px;
   }
   #current-time {
     font-size: 25px !important;
@@ -183,6 +269,9 @@ a {
   }
   .subtitles {
     font-size: 20px;
+  }
+  .progress-container {
+    width: 80%;
   }
 }
 @media only screen and (max-width: 800px) {
@@ -201,6 +290,24 @@ a {
   .subtitles {
     font-size: 18px;
   }
+  .progress-container {
+    width: 70%;
+  }
+  #mobile-options-wrapper > * {
+    margin-right: 0 !important;
+  }
+  #calculation-method-wrapper {
+    display: flex;
+    gap: 1rem;
+    /* vertically and horizontally center */
+    align-items: center;
+    justify-content: center;
+  }
+  #calculation-method {
+    margin: 0 !important;
+    font-size: 16px !important;
+    width: min-content !important;
+  }
 }
 @media only screen and (min-width: 1200px) {
   .subtitles {
@@ -208,6 +315,9 @@ a {
   }
   #countdown {
     font-size: 170px;
+  }
+  .progress-container {
+    width: 60%;
   }
 }
 #mobile-options-wrapper {
@@ -254,10 +364,20 @@ a {
 #all-prayer-times span {
   float: right;
 }
+#all-prayer-times div {
+  padding-bottom: 6px;
+  position: relative;
+}
+#all-prayer-times .table-star {
+  position: absolute;
+  right: -1.2rem;
+  height: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
 #all-prayer-times p {
   background-color: var(--sub-background);
   margin: 0;
-  margin-bottom: 6px;
   padding: 10px;
   border-radius: 2px;
   font-size: clamp(0.5em, 1.1em, 1.6em);
@@ -276,4 +396,35 @@ a {
 .loading h2 {
   font-size: 3ch;
   letter-spacing: 3px;
+}
+
+/* Style calculation method dropdown */
+#calculation-method {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 8px 10px 8px;
+  border-radius: 5px;
+  background-color: var(--sub-background);
+  margin: 0 auto;
+  width: min-content;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: white;
+  max-width: 100%;
+  font-size: 14px;
+  text-overflow: ellipsis;
+}
+
+#calculation-method option {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: white;
+  color: black;
+  border-radius: 20px;
+  font-size: 16px;
+  width: 96%;
+  text-overflow: ellipsis;
 }

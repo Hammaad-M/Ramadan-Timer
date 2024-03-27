@@ -7,7 +7,7 @@ const ezlocalTime = require("ez-local-time");
 const tzlookup = require("tz-lookup");
 const nearbyCities = require("nearby-cities");
 const citiesOfClients = [];
-let totalVisits = 0;
+let totalVisits = 11032;
 let visitsThisHour = 0;
 console.log(__dirname);
 app.use(express.static(path.join(__dirname, "public")));
@@ -17,6 +17,7 @@ app.use(express.json({ limit: "5gb" }));
 app.post("/client", (request, response) => {
   const city = request.body.location;
   totalVisits++;
+  visitsThisHour++;
   if (citiesOfClients.indexOf(city) == -1) {
     citiesOfClients.push(city);
     console.log(city + " has sent its first ambassador!");
@@ -24,10 +25,19 @@ app.post("/client", (request, response) => {
   response.json({ status: "success" });
 });
 app.get("/customCityTime", async (req, res) => {
-  const dateObject = ezlocalTime(req.get("timezone"));
+  const tz = req.get("timezone");
+  // if (!tz || tz == "" || tz == undefined) {
+  //   res.json({
+  //     status: 400, // bad request
+  //     message: "Please provide a timezone",
+  //   });
+  // }
+  const dateObject = ezlocalTime(tz);
+  // console.log(dateObject.dateTime.getHours());
   res.json({
     status: 200,
-    dateTime: dateObject.date + dateObject.time,
+    //dateTime: dateObject.date + dateObject.time,
+    dateTime: dateObject.dateTime,
   });
 });
 app.get("/geoData", async (req, res) => {
@@ -71,22 +81,33 @@ app.get("/searchForCity", (req, res) => {
   }
 });
 const formatDate = (date) => {
-  const hours = date.getHours();
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
   let suffix = "am";
   if (hours > 12) {
     hours -= 12;
     suffix = "pm";
   }
-  return `${hours}:${date.getMinutes()} ${suffix}`;
+  return `${hours}:${minutes} ${suffix}`;
 };
 // log usage data every 1 hour
-setInterval(() => {
+
+const logUsageData = () => {
   const now = new Date();
   console.log(
-    `Date: ${now.toDateString()} ${formatDate(
+    `\nDate: ${now.toDateString()} ${formatDate(
       now
     )}\nHour's Visits: ${visitsThisHour}`
   );
-  console.log("Total Visits: " + totalVisits + "\n\n");
+  console.log("Total Visits: " + totalVisits);
+  console.log(
+    "Total number of cities accessed: " + citiesOfClients.length + "\n\n"
+  );
   visitsThisHour = 0;
-}, 3600000);
+};
+
+logUsageData();
+setInterval(logUsageData, 3600000);
