@@ -12,6 +12,8 @@ const currentTime = document.getElementById("current-time");
 const allPrayerTimes = document.getElementById("all-prayer-times");
 const adhanOptions = document.getElementById("adhan-options");
 const dateDisplay = document.getElementById("date");
+const errorDisplay = document.getElementById("error-display");
+
 document.getElementById("adhan-off").checked = true;
 const days = [
   "Sunday",
@@ -108,6 +110,7 @@ async function getTimes(data) {
           "https://www.islamicfinder.us/index.php/api/prayer_times?user_ip=" +
             data.ip,
           (response) => {
+            console.log(response);
             if (response.success == false || !response) {
               err = true;
             } else {
@@ -116,7 +119,11 @@ async function getTimes(data) {
               resolve({ times, city });
             }
           }
-        );
+        ).fail((jqxhr, textStatus, error) => {
+          // Use backup API
+          errorDisplay.textContent =
+            "Sorry, the servers are down. Unable to fetch prayer times. ";
+        });
       });
     } else {
       await jQuery(async ($) => {
