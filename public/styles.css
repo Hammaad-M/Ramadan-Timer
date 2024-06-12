@@ -1,0 +1,430 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@700&display=swap");
+
+body {
+  padding: 10px;
+  margin: 0;
+  font-family: "Kanit", sans-serif;
+  text-align: center;
+  color: white;
+  overflow-x: hidden;
+  background-color: rgba(109, 30, 30, 0.959);
+}
+:root {
+  --sub-background: rgba(238, 238, 238, 0.1);
+}
+input {
+  border: 1px solid white;
+  background-color: white;
+}
+input[type="radio"] {
+  float: right;
+  margin-top: 5px;
+}
+a {
+  color: white;
+}
+.hidden {
+  display: none;
+}
+.customize {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  /* padding-top: 0.8rem; */
+}
+.change-countdown {
+  background-color: var(--sub-background);
+  border: 1px solid rgba(240, 233, 233, 0.152);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 0.25rem;
+  padding: 0.4rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.option-seperator {
+  padding-top: 0.4rem;
+  padding-bottom: 0.2rem;
+  position: relative;
+  opacity: 0.5;
+  color: white;
+  margin: 0 auto;
+}
+.countdown-wrapper {
+  display: flex;
+  align-items: center;
+}
+.countdown-wrapper #countdown {
+  flex: 1;
+}
+.star {
+  display: none;
+}
+#info {
+  display: flex;
+  width: max-content;
+  position: relative;
+  margin: auto !important;
+  align-items: center;
+  gap: 0.1rem;
+  padding-bottom: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+#info .subtitles {
+  margin: 0;
+}
+
+.progress-container {
+  width: 90%;
+  border-radius: 15px;
+  background-color: var(--sub-background);
+  position: relative;
+  margin: 20px auto;
+  margin-top: 2px;
+}
+.progress-display {
+  position: relative;
+  width: max-content;
+  margin: 0 auto;
+  padding: 2px;
+  padding-bottom: 0;
+  margin-bottom: 5px;
+  background-color: var(--sub-background);
+}
+.progress-bar {
+  width: 50%;
+  border-radius: 5px;
+  height: 100%;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  background-color: white;
+  box-shadow: 0px 0px 3px whitesmoke;
+}
+
+.content {
+  width: 100%;
+}
+.content img {
+  border: 3px solid black;
+  max-width: 35em;
+  float: center;
+}
+#change-location {
+  padding: 8px 12px;
+  background-color: var(--sub-background);
+  color: white;
+  border: 1px solid rgba(240, 233, 233, 0.152);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  border-radius: 5px;
+  font-size: 16px;
+}
+.location-form input {
+  padding: 5px;
+  width: 40%;
+  max-width: 12em;
+  width: var(--sub-background) !important;
+  border: 1px solid white !important;
+}
+.user-input {
+  border-radius: 5px;
+  border: 2px solid black;
+  font-family: "Kanit", sans-serif;
+}
+.dropdown {
+  margin: 0;
+  z-index: 2;
+  padding: 0;
+  position: absolute;
+  right: 0;
+  left: 0;
+  padding: 0 18px;
+  border-radius: 2px;
+}
+#options-wrapper {
+  max-height: 16.5em;
+  overflow-y: scroll;
+  background-color: transparent;
+  padding: 0;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: clamp(12em, 17.5em, 20em);
+  border: 1px solid black;
+  border-radius: 5px;
+}
+.drop-down-buttons {
+  margin: 0;
+  padding: 10px;
+  border: none;
+  background-color: white;
+  color: black;
+  width: 100%;
+  transition: 0.2;
+  border-radius: 1px;
+  font-family: "Kanit", sans-serif;
+  font-size: 16px;
+}
+.drop-down-buttons:hover {
+  border: 2px solid white !important;
+}
+.hover-response {
+  transition: 0.3s;
+}
+.hover-response:hover {
+  background-color: rgba(238, 238, 238, 1) !important;
+  color: black !important;
+  border: 1px solid black !important;
+  border-radius: 5px !important;
+}
+#countdown {
+  font-family: "Ubuntu Mono", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 95px;
+  font-weight: bolder;
+  letter-spacing: 1px;
+  padding: 0;
+  margin-bottom: 0.4em;
+  margin: 0;
+}
+.err-display {
+  font-size: 32px !important;
+  letter-spacing: 2px !important;
+}
+.bold {
+  letter-spacing: 1px;
+}
+.reference {
+  position: relative;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 8em;
+}
+#current-time {
+  font-family: "Ubuntu Mono", sans-serif;
+}
+@media only screen and (max-width: 500px) {
+  #countdown {
+    font-size: 88px;
+    margin-bottom: 10px;
+    font-family: "Ubuntu Mono", sans-serif;
+    letter-spacing: 0;
+  }
+  #change-location {
+    font-size: 14px;
+  }
+  .subtitles {
+    font-size: 16px;
+  }
+  #info,
+  #next-prayer-wrapper {
+    font-size: 18px !important;
+    margin: 0;
+    margin-bottom: 8px;
+  }
+}
+@media only screen and (max-width: 400px) {
+  #countdown {
+    font-size: 80px;
+    margin-bottom: 10px;
+  }
+}
+@media only screen and (max-width: 350px) {
+  #countdown {
+    font-size: 48px;
+  }
+  .err-display {
+    font-size: 18px !important;
+  }
+}
+@media only screen and (max-width: 300px) {
+  #countdown {
+    font-size: 38px;
+  }
+}
+@media only screen and (max-width: 750px) and (min-width: 501px) {
+  #countdown {
+    font-size: 150px;
+    letter-spacing: -3px;
+  }
+  .user-input {
+    font-size: 16px;
+  }
+  .subtitles {
+    font-size: 18px;
+  }
+  #current-time {
+    font-size: 25px !important;
+  }
+}
+@media only screen and (min-width: 750px) and (max-width: 900px) {
+  #countdown {
+    font-size: 130px;
+  }
+  .subtitles {
+    font-size: 20px;
+  }
+  .progress-container {
+    width: 80%;
+  }
+}
+@media only screen and (max-width: 800px) {
+  .loading {
+    font-size: 10px;
+  }
+}
+@media only screen and (min-width: 900px) {
+  .reference {
+    position: absolute;
+    bottom: 10px;
+  }
+  #countdown {
+    font-size: 130px;
+  }
+  .subtitles {
+    font-size: 18px;
+  }
+  .progress-container {
+    width: 70%;
+  }
+  #mobile-options-wrapper > * {
+    margin-right: 0 !important;
+  }
+  #calculation-method-wrapper {
+    display: flex;
+    gap: 1rem;
+    /* vertically and horizontally center */
+    align-items: center;
+    justify-content: center;
+  }
+  #calculation-method {
+    margin: 0 !important;
+    font-size: 16px !important;
+    width: min-content !important;
+  }
+}
+@media only screen and (min-width: 1200px) {
+  .subtitles {
+    font-size: 20px;
+  }
+  #countdown {
+    font-size: 170px;
+  }
+  .progress-container {
+    width: 60%;
+  }
+}
+#mobile-options-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+#mobile-options-wrapper > * {
+  margin: 0;
+  margin-right: 0.5em;
+}
+.resizable {
+  position: absolute;
+  top: 0;
+  border-radius: 10px;
+  height: max-content;
+  width: max-content;
+  padding: 10px;
+  margin: 0;
+}
+.options {
+  float: right;
+  right: 0;
+  text-align: right;
+}
+.resized {
+  text-align: center;
+  position: relative;
+  float: initial;
+  margin: auto;
+  display: inline-block;
+  margin-right: 20px;
+}
+#adhan-options {
+  background-color: var(--sub-background);
+  margin: 5px;
+  border-radius: 3px;
+}
+#all-prayer-times {
+  padding-top: 4px;
+  text-align: left;
+  letter-spacing: 1px;
+}
+#all-prayer-times span {
+  float: right;
+}
+#all-prayer-times div {
+  padding-bottom: 6px;
+  position: relative;
+}
+#all-prayer-times .table-star {
+  position: absolute;
+  right: -1.2rem;
+  height: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#all-prayer-times p {
+  background-color: var(--sub-background);
+  margin: 0;
+  padding: 10px;
+  border-radius: 2px;
+  font-size: clamp(0.5em, 1.1em, 1.6em);
+}
+.loading {
+  width: 100%;
+  height: 100%;
+}
+.loading h1 {
+  letter-spacing: 2px;
+  font-weight: semibold;
+  text-align: center;
+  font-size: 5ch;
+  margin-top: 1em;
+}
+.loading h2 {
+  font-size: 3ch;
+  letter-spacing: 3px;
+}
+
+/* Style calculation method dropdown */
+#calculation-method {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 8px 10px 8px;
+  border-radius: 5px;
+  background-color: var(--sub-background);
+  margin: 0 auto;
+  width: min-content;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: white;
+  max-width: 100%;
+  font-size: 14px;
+  text-overflow: ellipsis;
+}
+
+#calculation-method option {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: white;
+  color: black;
+  border-radius: 20px;
+  font-size: 16px;
+  width: 96%;
+  text-overflow: ellipsis;
+}
