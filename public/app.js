@@ -207,78 +207,6 @@ function newInit(params) {
   TIDs.forEach((TID) => clearInterval(TID));
   init(params);
 }
-async function getTimes(data) {
-  if (!("fetch" in window)) {
-    alert("Fetch API disabled or not found...unable to get prayer times.");
-    return;
-  }
-  let times = [];
-  return new Promise(async (resolve) => {
-    if (useIP) {
-      await jQuery(async ($) => {
-        $.getJSON(
-          "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
-            calcMethod +
-            "&user_ip=" +
-            data.ip,
-          (response) => {
-            console.log(response);
-            if (response.success == false || !response) {
-              // err = true;
-              console.error("Invalid Response", response);
-              // errorScreen(101);
-              resolve(null);
-            } else {
-              times = timesToArray(response);
-              let city = response.settings.location.city;
-              resolve({ times, city });
-            }
-          }
-        ).fail((jqxhr, textStatus, error) => {
-          // Use backup API
-          errorDisplay.textContent =
-            "Sorry, the servers are down. Unable to fetch prayer times. ";
-        });
-      });
-    } else {
-      await jQuery(async ($) => {
-        $.getJSON(
-          "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
-            calcMethod +
-            "&latitude=" +
-            data.lat +
-            "&longitude=" +
-            data.lon +
-            "&timezone=" +
-            data.timezone,
-          (response) => {
-            if (!response.success) {
-              err = true;
-              errorScreen(101);
-            } else {
-              times = timesToArray(response);
-              resolve(times);
-            }
-          }
-        );
-      });
-    }
-  });
-}
-function timesToArray(response) {
-  let times = [];
-  times.push(
-    response.results.Fajr,
-    response.results.Dhuhr,
-    response.results.Asr,
-    response.results.Maghrib,
-    response.results.Isha
-  );
-  times.forEach((t, i) => {
-    times[i] = t.replace("%", "").replace("%", "");
-  });
-  return times;
-}
 async function getLocation() {
   return new Promise(async (resolve) => {
     await jQuery(async ($) => {
@@ -417,9 +345,7 @@ async function getCustomCityTime(timezone) {
     console.error("Invalid response status", res);
     errorScreen(303);
   } else {
-    return new Date(
-      res.dateTime.substring(0, res.dateTime.length - 1)
-    ).getTime();
+    return new Date(res.dateTime).getTime();
   }
 }
 function resetContent() {
@@ -568,23 +494,27 @@ async function getUserData() {
     } else {
       queryData = backup;
       useIP = false;
-      times = await getTimes(backup);
+      const fallbackData = await getTimes(backup);
+      times = fallbackData ? fallbackData.times : [];
       location = "Seattle";
       toggleLoadingScreen();
     }
   };
 
   try {
-    location = await getLocation();
-    if (location === null) {
+    const ipData = await getLocation();
+    if (ipData === null) {
       await handleError();
       return null;
     }
-    queryData = { ip: location.ip };
-    useIP = true;
+    queryData = { lat: ipData.latitude, lon: ipData.longitude, timezone: ipData.timezone };
+    useIP = false;
     const data = await getTimes(queryData);
-    location = data.city;
-
+    if (!data) {
+      await handleError();
+      return null;
+    }
+    location = ipData.city;
     times = data.times;
     if (myCity === null) {
       myCity = location.toLowerCase();
@@ -603,7 +533,8 @@ async function setCustomLocation(city) {
   useIP = false;
   unix = await getCustomCityTime(city.timezone);
   queryData = city;
-  times = await getTimes(queryData);
+  const cityData = await getTimes(queryData);
+  times = cityData ? cityData.times : [];
   if (unix > 1) {
     now = new Date(unix);
   }
@@ -673,47 +604,6 @@ async function getPrayerDate(time, data, nextPrayer) {
     time = prayer.time;
   }
   return { date, time };
-}
-function getNextPrayerTime(date, data) {
-  let dateString =
-    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  let query = useIP
-    ? "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
-      calcMethod +
-      "&user_ip=" +
-      data.ip +
-      "&date=" +
-      dateString
-    : "https://www.islamicfinder.us/index.php/api/prayer_times?method=" +
-      calcMethod +
-      "&latitude=" +
-      data.lat +
-      "&longitude=" +
-      data.lon +
-      "&timezone=" +
-      data.timezone +
-      "&date=" +
-      dateString;
-  return new Promise(async (resolve) => {
-    await jQuery(async ($) => {
-      $.getJSON(query, (res) => {
-        if (!res.success) {
-          err = true;
-          resolve(date);
-        } else {
-          let string = timesToArray(res)[0];
-          const hours = parseInt(string.substring(0, string.indexOf(":")));
-          const minutes = parseInt(
-            string.substring(string.indexOf(":") + 1, string.indexOf("m") - 2)
-          );
-          date.setHours(hours);
-          date.setMinutes(minutes);
-          //alert(JSON.stringify({ date: date, time: "*" + string }));
-          resolve({ date: date, time: "*" + string });
-        }
-      });
-    });
-  });
 }
 function to24hrTime(time) {
   let string = time;

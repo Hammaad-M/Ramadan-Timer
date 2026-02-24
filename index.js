@@ -36,8 +36,7 @@ app.get("/customCityTime", async (req, res) => {
   // console.log(dateObject.dateTime.getHours());
   res.json({
     status: 200,
-    //dateTime: dateObject.date + dateObject.time,
-    dateTime: dateObject.dateTime,
+    dateTime: dateObject.date + "," + dateObject.time,
   });
 });
 app.get("/geoData", async (req, res) => {
