@@ -3,7 +3,6 @@ const app = express();
 const port = process.env.PORT || 8080;
 const path = require("path");
 const cityTimezones = require("city-timezones");
-const ezlocalTime = require("ez-local-time");
 const tzlookup = require("tz-lookup");
 const nearbyCities = require("nearby-cities");
 const citiesOfClients = [];
@@ -32,11 +31,10 @@ app.get("/customCityTime", async (req, res) => {
   //     message: "Please provide a timezone",
   //   });
   // }
-  const dateObject = ezlocalTime(tz);
-  // console.log(dateObject.dateTime.getHours());
+  const dateTime = new Date().toLocaleString("en-US", { timeZone: tz });
   res.json({
     status: 200,
-    dateTime: dateObject.date + "," + dateObject.time,
+    dateTime: dateTime,
   });
 });
 app.get("/geoData", async (req, res) => {
